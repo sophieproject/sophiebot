@@ -17,22 +17,17 @@ var con = mysql.createConnection({
 });
 */
 bot.on('message', msg => {
-  guildID = msg.guild.id
-  msg.guild.members.fetch()
-  memberIDs = msg.guild.members.cache.keyArray()
-  console.info(memberIDs)
-
   // confirm ages
-    age = ["i", "i'm", "i am", "i am", "i am", "i am"];
-    minornumber = ["10", "11", "12", "13", "14", "15"]
+    age = ["i", "i'm", "i am"];
+    minornumber = ["10", "11", "12", "13", "14", "15", "16"]
     adultnumber = ["21"];
-    youngadultnumber = ["16", "17", "18", "19"];
+    youngadultnumber = ["17", "18", "19"];
 
-  for (var i = 0; i < age.length; i++) {
-  if (msg.content.toLowerCase().includes(age[i]) && msg.content.includes(minornumber[i])) {
-    msg.channel.send(`Age confirmed: Minor \n ID: ${msg.author.id}`);
-    break;
-  }
+for (var i = 0; i < age.length; i++) {
+if (msg.content.toLowerCase().includes(age[i]) && msg.content.includes(minornumber[i])) {
+  msg.channel.send(`Age confirmed: Minor \n ID: ${msg.author.id}`);
+  break;
+}
 }
 for (var i = 0; i < age.length; i++) {
 if (msg.content.toLowerCase().includes(age[i]) && msg.content.includes(adultnumber[i])) {
