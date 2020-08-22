@@ -9,26 +9,27 @@ bot.on('ready', () => {
             console.info(`Logged in as ${bot.user.tag}!`); // active
 
             //declaring some variables
-            age = ["i", "i'm", "i am"];
-            minornumber = ["10", "11", "12", "13", "14", "15", "16"]
-            adultnumber = ["21"];
-            youngadultnumber = ["17", "18", "19"]; // unfortunatly this doesn't protect against lies - but if an age has already been filled it'll say so
-            explicit = [];
+          var  age = ["i", "i'm", "i am"];
+           var minornumber = ["10", "11", "12", "13", "14", "15", "16"]
+           var adultnumber = ["21"];
+           var youngadultnumber = ["17", "18", "19"]; // unfortunatly this doesn't protect against lies - but if an age has already been filled it'll say so
+           var explicit = ["nudes"];
 
             bot.on('message', msg => {
+              console.log("Message Recieved")
                 // confirm ages
                 for (var i = 0; i < age.length; i++) {
                     if (msg.content.toLowerCase().includes(age[i]) && msg.content.includes(minornumber[i])) {
                         msg.channel.send(`Age confirmed: Minor \n ID: ${msg.author.id}`);
                         fs.readFile(`db/${msg.author.id}`, 'utf8', function(err, data) {
-                                userage = (data);
+                              var  userage = (data);
                                 if (fs.existsSync(`${msg.author.id}`) && userage == "Adult" || fs.existsSync(`${msg.author.id}`) && userage == "Young Adult" || fs.existsSync(`${msg.author.id}`) && userage == "Pedophile") {
-                                  message.channel.send({
+                                  msg.channel.send({
                                       embed: {
                                           color: e74c3c,
                                           author: {
-                                              name: client.user.username,
-                                              icon_url: client.user.avatarURL
+                                              name: bot.user.username,
+                                              icon_url: msg.author.user.avatarURL
                                           },
                                           title: "WARNING",
                                           description: "This user has claimed to be older in the past, proceed with extreme caution!",
@@ -45,9 +46,9 @@ bot.on('ready', () => {
                                         }
                                         msg.channel.send("Age saved!");
                                     });
-                                    break;
                                 }
                             });
+                      break;
                         }
 
 
@@ -86,12 +87,12 @@ bot.on('ready', () => {
                     fs.readFile(`db/${msg.author.id}`, 'utf8', function(err, data) {
                         if (err) {
                             console.log(err);
-                            message.channel.send({
+                            msg.channel.send({
                                 embed: {
                                     color: f1c40f,
                                     author: {
-                                        name: client.user.username,
-                                        icon_url: client.user.avatarURL
+                                        name: bot.user.username,
+                                        icon_url: msg.author.user.avatarURL
                                     },
                                     title: "Alert!",
                                     description: "I could not find this user's age in my database. Proceed with caution!",
@@ -102,15 +103,15 @@ bot.on('ready', () => {
                                 }
                             });
                         }
-                        userage = (data);
+                       var userage = (data);
                     });
-                    if (msg.content.toLowerCase().includes(explicit[i]) && userage == Adult {
-                            message.channel.send({
+                    if (msg.content.toLowerCase().includes(explicit[i]) && userage == "Adult") {
+                            msg.channel.send({
                                 embed: {
                                     color: e74c3c,
                                     author: {
-                                        name: client.user.username,
-                                        icon_url: client.user.avatarURL
+                                        name: bot.user.username,
+                                        icon_url: msg.author.user.avatarURL
                                     },
                                     title: "WARNING",
                                     description: "This user may be an adult! Please proceed with extreme caution!",
@@ -121,13 +122,13 @@ bot.on('ready', () => {
                                 }
                             });
                         }
-                        if (msg.content.toLowerCase().includes(explicit[i]) && userage == Pedophile {
-                                message.channel.send({
+                        if (msg.content.toLowerCase().includes(explicit[i]) && userage == "Pedophile") {
+                                msg.channel.send({
                                     embed: {
                                         color: e74c3c,
                                         author: {
-                                            name: client.user.username,
-                                            icon_url: client.user.avatarURL
+                                            name: bot.user.username,
+                                            icon_url: msg.author.user.avatarURL
                                         },
                                         title: "WARNING",
                                         description: `@${msg.author.id}, a verified pedophile, has been detected. Proceed with extreme caution!`,
@@ -136,39 +137,9 @@ bot.on('ready', () => {
                                             text: "This bot is not 100% accurate and results may be flawed or incorrect."
                                         }
                                     }
-                                });
+                                }); // msg.channel.send
                             }
                         }
-
-                        /*
-                        // IF FILE NOT FOUND
-
-
-                        // IF AGE MISMATCH
-
-
-                        // IF ADULT -> CHILD
-
-
-                        // IF PRETEEN -> CHILD
-                        message.channel.send({embed: {
-                            color: f1c40f,
-                            author: {
-                              name: client.user.username,
-                              icon_url: client.user.avatarURL
-                            },
-                            title: "ALERT",
-                            description: "This user is 16-19, please proceed with caution.",
-                            timestamp: new Date(),
-                            footer: {
-                              text: "This bot is not 100% accurate and results may be flawed or incorrect."
-                            }
-                          }
-                        });
-
-                        // IF PEDOPHILE (banned)
-
-                        */
 
                         // EOC
                     });
