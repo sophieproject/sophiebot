@@ -1,0 +1,2 @@
+This file is to keep a folder open for the bot, all IDs and Ages will be listed here.
+This file is safe to delete but deleting the folder will result in an error.
