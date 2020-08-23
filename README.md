@@ -1,8 +1,3 @@
-# KidSafe
-A Discord bot that protects children from predators online
+#kidsafe
 
-
-TODO:
-* Any minor bugs need to be fixed
-* Improvements to detection technologies
-* Faulty needs to fix this README
+This branch is for release reasons only!
