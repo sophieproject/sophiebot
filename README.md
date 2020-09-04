@@ -1,9 +1,7 @@
-# KidSafe
+# DOPE Discord.
 
-KidSafe is a Discord bot designed to protect children from pedophiles and pedophile activity on Discord.
+This is DOPE Discord.
+DOPE is a database of predators etc.
 
-
-## To-Do
-
- - Add Age Discriminators ("I am a bit older" "I am older"
- - Add a strike system (10 possible Pedophilic activity will result in a net-ban in the system)
+#### Trello
+https://trello.com/b/Z40gGQn9
