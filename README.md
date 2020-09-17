@@ -7,4 +7,4 @@ https://trello.com/b/Z40gGQn9
 
 #### Changelog
 
-### 1.0.1: Security Update. One security error was fixed in package.json
+##### 1.0.1: Security Update. One security error was fixed in package.json
