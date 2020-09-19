@@ -10,8 +10,6 @@ var connection = mysql.createConnection({
   user: USER,
   password: PASSWORD,
   database: "sophie",
-  multipleStatements: "true",
-  debugMode: "true"
 });
 connection.connect(function(err) {
   if (err) {
@@ -40,14 +38,15 @@ connection.connect(function(err) {
       "boobs",
       "breasts",
       "fuck your"
-    ];
+    ]; // I need to improve this list and enhance it's detection of censored attempts, wonder if Tensorflow could do it??
     bot.on("guildCreate", guild => {
       // when the bot is in a new guild, scan everyone's ID for potentional preadators
+      // not tonight... please not tonight...
     });
     bot.on("guildMemberAdd", member => {
       console.log("New Member");
-      connection.query(`SELECT * FROM pedodb WHERE ID = "${msg.author.id}"`),
-        function(err, result) {
+      connection.query(`SELECT * FROM pedodb WHERE ID='${msg.author.id}'`, [], 
+    function (error, result, fields) {
           console.log("Query Submitted");
           if (result.includes("Pedophile")) {
             console.log("Pedophile found!");
@@ -69,8 +68,9 @@ connection.connect(function(err) {
             //
             guild.members.ban(member.id);
           }
-        };
     });
+  });
+
     //declaring some variables
 
     bot.on("message", msg => {
@@ -83,9 +83,20 @@ connection.connect(function(err) {
         process.exit("ADMIN_TERMINATED_PROCESS");
 
       // confirm ages
+      connection.query(`SELECT * FROM pedodb WHERE ID='${msg.author.id}'`, [], // baby don't hurt me, don't hurt me no mooore (seriously tho this code might be the death of me)
+    function (error, result, fields) {
+    //callback(null, rows, fields);
+    console.log("Query Initiated")
+    console.log(result)
+    console.log("---------")
+    //var rows = JSON.parse(JSON.stringify(result[0]));
+    //console.log(rows)
+   // console.log(fields)
+      /*
       connection.query(`SELECT * FROM pedodb WHERE ID = "${msg.author.id}"`),
         function(err, result) {
           query.on("result", function(row) {
+            */
             if (
               msg.content.toLowerCase().includes("i'm") ||
               msg.content.toLowerCase().includes("i am") ||
@@ -94,7 +105,8 @@ connection.connect(function(err) {
             ) {
               console.log("Age Confession Detected");
               console.log(result);
-              if (result.includes("Pedophile")) {
+              try {
+              if (result[0].flag == ("Pedophile")) {
                 // If the user is a pedophile
                 msg.channel.send({
                   embed: {
@@ -112,8 +124,10 @@ connection.connect(function(err) {
                   }
                 });
               }
+            } catch{
+              console.log("Error Caught")
             }
-          });
+          
 
           if (
             msg.content.toLowerCase().includes("10") ||
@@ -125,19 +139,14 @@ connection.connect(function(err) {
             msg.content.toLowerCase().includes("16")
           ) {
             console.log("Minor Age Detected");
-            connection.query(
-              `SELECT * FROM pedodb WHERE ID='${msg.author.id}'`
-            ),
-              function(err, result) {
-                query.on("result", function(err2, result2) {
-                  console.log("Query Initiated");
                   msg.channel.send(
                     `Age confirmed: Minor \n ID: ${msg.author.id}`
                   );
+                  try {
                   if (
-                    result2[1].flag("Adult") ||
-                    result2[1].flag("Young Adult") ||
-                    result2[1].flag("Pedophile")
+                    result['flag'] == ("Adult") ||
+                    result['flag'] == ("Young Adult") ||
+                    result['flag'] == ("Pedophile")
                   ) {
                     msg.channel.send({
                       embed: {
@@ -155,15 +164,17 @@ connection.connect(function(err) {
                         }
                       }
                     });
-                    return;
-                  } else {
+                  }
+                  if (result['flag'] == "Minor") {
+                    connection.query(`UPDATE ID="${msg.author.id}", flag="Minor"`);
+                  } // in case an entry is found
+                 }
+                 catch { // <-- Yeah finally I figured this out
                     console.log("Age Verified");
                     connection.query(
-                      `INSERT INTO pedodb(id,flag) VALUES('${msg.author.id}','Minor') ON DUPLICATE KEY UPDATE ID="${msg.author.id}", flag="Minor";`
+                      `INSERT INTO pedodb(id,flag) VALUES('${msg.author.id}','Minor'` //ID="${msg.author.id}", flag="Minor"
                     );
-                  }
-                });
-              };
+                 }
           } else {
             if (
               msg.content.toLowerCase().includes("20") ||
@@ -332,7 +343,7 @@ connection.connect(function(err) {
                     } else {
                       console.log("Age Verified");
                       connection.query(
-                        `INSERT INTO pedodb(id,flag) VALUES('${msg.author.id}','Adult') ON DUPLICATE KEY UPDATE ID="${msg.author.id}", flag="Minor";`
+                        `INSERT INTO pedodb(id,flag) VALUES('${msg.author.id}','Adult') ON DUPLICATE KEY UPDATE ID="${msg.author.id}", flag="Adult";`
                       );
                     }
                   });
@@ -431,7 +442,8 @@ connection.connect(function(err) {
             }
           }
         };
-    });
+        });
+  });
   });
   bot.login(TOKEN);
 });
