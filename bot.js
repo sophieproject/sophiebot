@@ -1,8 +1,16 @@
 require("dotenv").config();
 const Discord = require("discord.js");
 const bot = new Discord.Client();
-const fs = require('fs');
+var mysql = require('mysql');
 const TOKEN = process.env.TOKEN;
+const MySQLPassword = process.env.MySQLPassword;
+
+var con = mysql.createConnection({
+    host: "localhost",
+    user: "sophiebot",
+    password: MySQLPassword,
+    database: "sophie"
+  });
 
 function ageCheck(string, a, b) {
     const found = string.match(/\d{2,3}/gm)
@@ -19,13 +27,24 @@ function ageCheck(string, a, b) {
 
 bot.on("ready", () => {
     console.info(`Logged in as ${bot.user.tag}!`); // Log when deployed
+    con.connect(function(err) {
+        if (err) throw err;
+        console.log("Connection to MySQL Established") //  Log when connected
+
+
     bot.on("guildCreate", guild => {
         guild.members.fetch()
         memberIDs = guild.members.cache.keyArray()
-        let dbraw = fs.readFileSync('db.json');
-        var db = JSON.parse(dbraw);
+        //callback(null, rows, fields);
+        console.log("Query Initiated")
         for (var i = 0; i < memberIDs.length; i++) {
-            if (db.memberIDs[i] == "P") {
+            con.query(`SELECT * FROM pedodb WHERE ID = ?`, [memberIDs[i]],
+            function (err, result, fields) {
+                if (result == undefined) {
+
+                } else
+                if (result.length > "0") {
+            if (result[0].flag == "P") {
                 guild.members.kick(member.id);
                 msg.channel.send({
                     embed: {
@@ -34,7 +53,7 @@ bot.on("ready", () => {
                             name: bot.user.username
                         },
                         title: "WARNING",
-                        description: `<@${db.memberIDs[i]}>, a verified pedophile, has been detected. They have been removed.`,
+                        description: `<@${memberIDs[i]}>, a verified pedophile, has been detected. They have been removed.`,
                         timestamp: new Date(),
                         footer: {
                             text: "This bot is not 100% accurate and results may be flawed or incorrect."
@@ -43,13 +62,23 @@ bot.on("ready", () => {
                 });
             }
         }
+        })
+    
+        }
+
     });
 
     bot.on("guildMemberAdd", member => {
         console.log("New Member");
-        let dbraw = fs.readFileSync('db.json');
-        var db = JSON.parse(dbraw);
-        if (db[member.id].includes("P")) {
+        con.query(`SELECT * FROM pedodb WHERE ID = ?`, [msg.author.id],
+        function (err, result, fields) {
+       //callback(null, rows, fields);
+       console.log("Query Initiated")
+       if (result == undefined) {
+
+    } else
+       if (result.length > "0") {
+        if (result[0].flag == ("P")) {
             console.log("Pedophile found!");
             msg.channel.send({
                 embed: {
@@ -68,27 +97,30 @@ bot.on("ready", () => {
             //
             guild.members.kick(member.id);
         }
+    }
 
     });
+});
 });
 
 bot.on("message", msg => {
     if (msg.author.bot) return; // stop if it's a bot
-    let dbraw = fs.readFileSync('db.json');
-    var db = JSON.parse(dbraw);
     if (msg.content == "Sophie End Process" && msg.author.id == "367352445657022484") { // if an Admin calls for the bot's termination
         console.error(`ADMIN_TERMINATED_PROCESS \n Admin: ${msg.author.id} \n Via: Discord \n GRACEFUL TERMINATION`)
         process.exit("ADMIN_TERMINATED_PROCESS");
-    } else if (msg.content == "Sophie Add Alert" && msg.author.id == "367352445657022484") {
-        db[msg.mentions.users.first()] = "S";
-        msg.channel.send("I have put an alert for that user.")
-        fs.writeFileSync('db.json', db);
-    } else if (msg.content == "Sophie Add Warning" && msg.author.id == "367352445657022484") {
-        db[msg.mentions.users.first()] = "P";
-        msg.channel.send("I have put a warning out for that user.")
-        fs.writeFileSync('db.json', db);
+    } else if (msg.content.startsWith("Sophie Add Alert") && msg.author.id == "367352445657022484") {
+        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'S')`;
+        con.query(sql, function (err) {
+          if (err) throw err;
+          console.log("Database Updated: Suspicious User Added")
+        });
+    } else if (msg.content.startsWith("Sophie Add Warning") && msg.author.id == "367352445657022484") {
+        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'P')`;
+        con.query(sql, function (err) {
+          if (err) throw err;
+          console.log("Database Updated: Pedophile Added")
+        });
     } else {
-        console.log(db)
         if (
             msg.content.toLowerCase().includes("i'm") ||
             msg.content.toLowerCase().includes("im") ||
@@ -98,8 +130,27 @@ bot.on("message", msg => {
         ) {
             if (ageCheck(msg.content.toLowerCase(), "8", "100")) {
                 console.log("Age Statement Detected")
+                con.query(`SELECT * FROM pedodb WHERE ID = ?`, [msg.author.id],
+                function (err, result, fields) {
+               //callback(null, rows, fields);
+               console.log(result)
+               console.log("Query Initiated")
                 if (ageCheck(msg.content.toLowerCase(), "8", "15")) {
-                    if (db[msg.author.id] in {
+                    if (result == undefined) {
+                        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'M')`;
+                        con.query(sql, function (err) {
+                          if (err) throw err;
+                          console.log("Database Updated: Minor Added")
+                        })
+                    } else
+                    if (result.length > "0") {
+                        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'M')`;
+                        con.query(sql, function (err) {
+                          if (err) throw err;
+                          console.log("Database Updated: Minor Added")
+                        })
+                    } else
+                    if (result[0].flag in {
                             1: "P",
                             2: "S",
                             3: "YA",
@@ -120,13 +171,29 @@ bot.on("message", msg => {
                             }
                         });
                     } else {
-                        var authorid = msg.author.id
-                        db[authorid] = "M";
-                        fs.writeFileSync('db.json', JSON.stringify(db));
-                        console.log("Database Updated: Minor Added")
+                        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'M')`;
+                        con.query(sql, function (err) {
+                          if (err) throw err;
+                          console.log("Database Updated: Minor Added")
+                        });
+                        
                     }
                 } else if (ageCheck(msg.content.toLowerCase(), "15", "19")) {
-                    if (db[msg.author.id] in {
+                    if (result == undefined) {
+                        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'M')`;
+                        con.query(sql, function (err) {
+                          if (err) throw err;
+                          console.log("Database Updated: Minor Added")
+                        })
+                    } else
+                    if (result.length > "0") {
+                        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'YA')`;
+                        con.query(sql, function (err) {
+                          if (err) throw err;
+                          console.log("Database Updated: Young Adult Added")
+                        })
+                    } else
+                    if (result[0].flag in {
                             1: "P",
                             2: "S",
                             3: "A"
@@ -146,15 +213,28 @@ bot.on("message", msg => {
                             }
                         });
                     } else {
-                        var authorid = msg.author.id
-                        db[authorid] = "M";
-                        fs.writeFileSync('db.json', JSON.stringify(db));
-                        console.log("Database Updated: Young Adult Added")
+                        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'YA')`;
+                        con.query(sql, function (err) {
+                          if (err) throw err;
+                          console.log("Database Updated: Young Adult Added")
+                        });
                     }
                 } else if (ageCheck(msg.content.toLowerCase(), "19", "100")) {
-                    if (db[msg.author.id] in {
-                            1: "S"
-                        }) {
+                    if (result == undefined) {
+                        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'M')`;
+                        con.query(sql, function (err) {
+                          if (err) throw err;
+                          console.log("Database Updated: Minor Added")
+                        })
+                    } else
+                    if (result.length > "0") {
+                        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'A')`;
+                        con.query(sql, function (err) {
+                          if (err) throw err;
+                          console.log("Database Updated: Adult Added")
+                        })
+                    } else
+                    if (result[0].flag == "S") {
                         msg.channel.send({
                             embed: {
                                 color: "e74c3c",
@@ -169,9 +249,7 @@ bot.on("message", msg => {
                                 }
                             }
                         });
-                    } else if (db[msg.author.id] in {
-                            1: "P"
-                        }) {
+                    } else if (result[0].flag == "P") {
                         msg.channel.send({
                             embed: {
                                 color: "e74c3c",
@@ -187,19 +265,26 @@ bot.on("message", msg => {
                             }
                         });
                     } else {
-                        var authorid = msg.author.id
-                        db[authorid] = "M";
-                        fs.writeFileSync('db.json', JSON.stringify(db));
-                        console.log("Database Updated: Adult Added")
+                        var sql = `INSERT IGNORE INTO pedodb (id, flag) VALUES ('${msg.author.id}', 'A')`;
+                        con.query(sql, function (err) {
+                          if (err) throw err;
+                          console.log("Database Updated: Adult Added")
+                        });
                     }
                 }
+            });
             }
         } else {
+            var fs = require('fs');
             var explicit = fs.readFileSync('explicit.txt').toString().split("\n");
             for (var i = 0; i < explicit.length; i++) {
                 if (msg.content.toLowerCase().includes(explicit[i])) {
                     console.log("Explicit Language Detected");
-                    if (err) {
+                    con.query(`SELECT * FROM pedodb WHERE ID = ?`, [msg.author.id],
+                    function (err, result, fields) {
+                   //callback(null, rows, fields);
+                   console.log("Query Initiated")
+                    if (result == undefined) {
                         msg.channel.send({
                             embed: {
                                 color: "f1c40f",
@@ -215,7 +300,7 @@ bot.on("message", msg => {
                             }
                         });
                     } else {
-                        if (result.includes("Adult")) {
+                        if (result[0].flag = ("A")) {
                             msg.channel.send({
                                 embed: {
                                     color: "e74c3c",
@@ -232,14 +317,11 @@ bot.on("message", msg => {
                             });
                         }
                     }
+                });
                 }
             }
         } // After Explicit Checks
     }
-
-    // on message reload Database
-
-
-
+})
 });
 bot.login(TOKEN);
