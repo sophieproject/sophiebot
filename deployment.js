@@ -308,8 +308,7 @@ bot.on('ready', () => {
 				  ) { return } else {
                 db.query(`SELECT * FROM pedodb WHERE ID = ${msg.author.id}`, [], function(err, result) {
 				  if (err) throw err;
-				  if (result == undefined) { explicitActivity(result)}
-				  if (result[0] != 'M' || result[0] != 'YA') {
+				  if (result[0].Flag == 'M' || result[0].Flag == 'YA') { } else {
 					  explicitActivity(result);
 				  }
 				},
