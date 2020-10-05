@@ -14,17 +14,17 @@
 	 .readFileSync("explicit.txt")
 	 .toString()
 	 .split("\r\n");
-	 const suspicious = fs
+   const suspicious = fs
 	 .readFileSync("suspicious.txt")
 	 .toString()
 	 .split("\r\n");
    /* #########################
-	  #  END OFF REQUIREMENTS #
-	  ######################### */
+		 #  END OFF REQUIREMENTS #
+		 ######################### */
    
    /* ###################
-	  #  CONFIGURATION  #
-	  ################### */
+		 #  CONFIGURATION  #
+		 ################### */
    
    // Change these values in the .env file for security
    const DiscordToken = process.env.DiscordToken;
@@ -33,8 +33,8 @@
    const SQLUser = process.env.SQLUser;
    const SQLDatabase = process.env.SQLDatabase;
    /* #########################
-	  #  END OF CONFIGURATION #
-	  ######################### */
+		 #  END OF CONFIGURATION #
+		 ######################### */
    
    // Start Connecting to MySQL and Load the Explicit Reg
    const db = mysql.createConnection({
@@ -90,8 +90,8 @@
    
 	 bot.on("message", msg => {
 	   /* #########################
-		  #  START OF FUNCTIONS   #
-		  ######################### */
+			 #  START OF FUNCTIONS   #
+			 ######################### */
    
 	   // Age Checker to check for a number in the age
 	   function ageCheck(string, min, max) {
@@ -206,21 +206,21 @@
 			 }
 		   });
 		   /*
-		   bot.channels.cache.get('762753428727660574').send({
-			   embed: {
-					 color: 'e74c3c',
-					 author: {
-				   name: 'Automated Ticket',
-					 },
-					 title: `${msg.author.username}#${msg.author.discriminator}`,
-					 description: `${msg.content}`,
-					 timestamp: new Date(),
-					 footer: {
-				   text: `${msg.author.id}`,
-					 },
-			   },
-				 });
-				 */
+			  bot.channels.cache.get('762753428727660574').send({
+				  embed: {
+						color: 'e74c3c',
+						author: {
+					  name: 'Automated Ticket',
+						},
+						title: `${msg.author.username}#${msg.author.discriminator}`,
+						description: `${msg.content}`,
+						timestamp: new Date(),
+						footer: {
+					  text: `${msg.author.id}`,
+						},
+				  },
+					});
+					*/
 		 } else {
 		   if ((result[0].Flag = "A")) {
 			 msg.react("⚠");
@@ -241,21 +241,21 @@
 			   }
 			 });
 			 /*
-			 bot.channels.cache.get('762753428727660574').send({
-			   embed: {
-					 color: 'e74c3c',
-					 author: {
-				   name: 'Automated Ticket',
-					 },
-					 title: `${msg.author.username}#${msg.author.discriminator}`,
-					 description: `${msg.content}`,
-					 timestamp: new Date(),
-					 footer: {
-				   text: `${msg.author.id}`,
-					 },
-			   },
-				 });
-				 */
+				bot.channels.cache.get('762753428727660574').send({
+				  embed: {
+						color: 'e74c3c',
+						author: {
+					  name: 'Automated Ticket',
+						},
+						title: `${msg.author.username}#${msg.author.discriminator}`,
+						description: `${msg.content}`,
+						timestamp: new Date(),
+						footer: {
+					  text: `${msg.author.id}`,
+						},
+				  },
+					});
+					*/
 		   }
 		 }
 	   }
@@ -269,8 +269,8 @@
 	   }
    
 	   /* #########################
-		  #   END OF FUNCTIONS    #
-		  ######################### */
+			 #   END OF FUNCTIONS    #
+			 ######################### */
    
 	   if (msg.author.bot) return; // return if it's a bot
 	   db.query(`SELECT * FROM pedodb WHERE ID = ${msg.author.id}`, [], function(
@@ -333,39 +333,49 @@
 			 }
 		   }
 		   for (let i = 0; i < suspicious.length; i++) {
-			if (msg.content.toLowerCase().includes(suspicious[i])) {
-			  if (
-				msg.content.toLowerCase().includes("don't") ||
-				msg.content.toLowerCase().includes("not") ||
-				msg.content.toLowerCase().includes("no") ||
-				msg.content.toLowerCase().includes("dont") ||
-				msg.content.toLowerCase().includes("who")
-			  ) {
-				return;
-			  } else{
-				msg.react("⚠");
-				update(msg.author.id, "S");
-				msg.channel.send({
-				  embed: {
-					color: "f1c40f",
-					author: {
-					  name: bot.user.username
-					},
-					title: "Alert!",
-					description:
-					  "A message was flagged as suspicous for being pro-map. This does not mean they are a pedophile, but keep an eye on their activity.",
-					timestamp: new Date(),
-					footer: {
-					  text: `Do not be alarmed just yet!`
-					}
-				  }
-				});
-			  }
-			}
-		}
+			 if (msg.content.toLowerCase().includes(suspicious[i])) {
+			   if (
+				 msg.content.toLowerCase().includes("don't") ||
+				 msg.content.toLowerCase().includes("not") ||
+				 msg.content.toLowerCase().includes("no") ||
+				 msg.content.toLowerCase().includes("dont") ||
+				 msg.content.toLowerCase().includes("who") ||
+				 msg.content.toLowerCase().includes("disgusting") ||
+				 msg.content.toLowerCase().includes("sick") ||
+				 msg.content.toLowerCase().includes("perverted")
+			   ) {
+				 return;
+			   } else {
+				 if (
+				   msg.content.toLowerCase().includes("i") ||
+				   msg.content.toLowerCase().includes("me") ||
+				   msg.content.toLowerCase().includes("my")
+				 ) {
+				   msg.react("⚠");
+				   update(msg.author.id, "S");
+				   msg.channel.send({
+					 embed: {
+					   color: "f1c40f",
+					   author: {
+						 name: bot.user.username
+					   },
+					   title: "Alert!",
+					   description:
+						 "A message was flagged as suspicous for being pro-map. This does not mean they are a pedophile, but keep an eye on their activity.",
+					   timestamp: new Date(),
+					   footer: {
+						 text: `Do not be alarmed just yet!`
+					   }
+					 }
+				   });
+				 }
+			   }
+			 }
+		   }
 		 }
 	   });
 	 });
    });
    
    bot.login(DiscordToken);
+   
