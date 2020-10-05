@@ -47,6 +47,23 @@ bot.on('ready', () => {
   });
   console.log('SOPHIE is active!');
 
+  bot.on('guildMemberAdd', (member) => {
+    db.query(`SELECT * FROM pedodb WHERE ID = ?`, [member.id], function(
+        err,
+        result,
+    ) {
+      if (err) throw err;
+      if (result.length > 0) {
+        if (result[0].Flag === 'P') {
+          console.log('Pedophile found!');
+		  member.kick()
+		  .then (console.log("Pedophile Found - Removed"))
+		  .catch (console.log("Error on Kick"));
+        }
+      }
+    });
+  });
+
   bot.on('guildCreate', (guild) => {
 	db.query(`SELECT * FROM pedodb WHERE Flag = 'P'`, [], function(
         err,
@@ -73,14 +90,19 @@ bot.on('ready', () => {
     // Age Checker to check for a number in the age
     function ageCheck(string, min, max) {
       const found = string.match(/\d{2,3}/gm);
-      let containsNumber = false;
+	  let containsNumber = false;
+	  try {
       for (let i = 0; i < found.length; i++) {
         const number = parseInt(found[i]);
         if (number > min && number < max) {
           containsNumber = true;
         }
-      }
-      return containsNumber;
+	  } 
+	  return containsNumber;
+	} catch {
+		  return false
+	  }
+      
     }
 
     function ageflair() {
@@ -177,6 +199,7 @@ bot.on('ready', () => {
             },
           },
 		});
+		/*
 		bot.channels.cache.get('762753428727660574').send({
 			embed: {
 				  color: 'e74c3c',
@@ -191,6 +214,7 @@ bot.on('ready', () => {
 				  },
 			},
 			  });
+			  */
       } else {
         if ((result[0].Flag = 'A')) {
 			msg.react('⚠');
@@ -210,6 +234,7 @@ bot.on('ready', () => {
               },
             },
 		  });
+		  /*
 		  bot.channels.cache.get('762753428727660574').send({
 			embed: {
 				  color: 'e74c3c',
@@ -224,6 +249,7 @@ bot.on('ready', () => {
 				  },
 			},
 			  });
+			  */
         }
       }
     }
@@ -245,7 +271,7 @@ bot.on('ready', () => {
         err,
         result,
     ) { // Set up the query
-      if (result.length > 0) {
+      if (result.length == 1) {
         if (result[0] == 'P') {
 			msg.author.ban(msg.author)
 			.then (console.log("Pedophile Found - Removed"))
@@ -281,8 +307,11 @@ bot.on('ready', () => {
 					 msg.content.toLowerCase().includes('dont')
 				  ) { return } else {
                 db.query(`SELECT * FROM pedodb WHERE ID = ${msg.author.id}`, [], function(err, result) {
-                  if (err) throw err;
+				  if (err) throw err;
+				  if (result == undefined) { explicitActivity(result)}
+				  if (result[0] != 'M' || result[0] != 'YA') {
 					  explicitActivity(result);
+				  }
 				},
 			
 				);
