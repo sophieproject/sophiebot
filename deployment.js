@@ -58,7 +58,7 @@ bot.on('ready', () => {
 			banned.push(result[i].ID);
 		  }
 		for (let i = 0; i < banned.length; i++) {
-			banned[i].kick(banned[i])
+			guild.members.ban(banned[i])
 			.then (console.log("Pedophile Found - Removed"))
 			.catch (console.log("Error on Kick")); // use this as a fallback - when a new member joins it counts as a message from that user.
 		}
@@ -112,13 +112,16 @@ bot.on('ready', () => {
     function ageMinor(string, result, id) {
       if (ageCheck(string, '8', '16')) {
         if (result.length >= 1) {
+			console.log(result[0].Flag)
           if (['A', 'YA', 'S', 'P'].includes(result[0].Flag)) {
             ageflair();
           } else {
-            update(id, 'M');
+			update(id, 'M');
+			msg.react('👍')
           }
         } else {
-          update(id, 'M');
+		  update(id, 'M');
+		  msg.react('👍')
         }
       }
     }
@@ -126,13 +129,16 @@ bot.on('ready', () => {
     function ageYA(string, result, id) {
       if (ageCheck(string, '17', '18')) {
         if (result.length >= 1) {
+			console.log(result[0].Flag)
           if (['A', 'S', 'P'].includes(result[0].Flag)) {
             ageflair();
           } else {
+			msg.react('👍')
             update(id, 'YA');
           }
         } else {
-          update(id, 'YA');
+		  update(id, 'YA');
+		  msg.react('👍')
         }
       }
     }
@@ -143,17 +149,19 @@ bot.on('ready', () => {
           if (['S', 'P'].includes(result[0].Flag)) {
             ageflair();
           } else {
-            update(id, 'A');
+			update(id, 'A');
+			msg.react('👍')
           }
         } else {
-          update(id, 'A');
+		  update(id, 'A');
+		  msg.react('👍')
         }
       }
     }
 
     function explicitActivity(result) {
       if (result.length < 1) {
-		message.react('⚠');
+		msg.react('⚠');
         msg.channel.send({
           embed: {
             color: 'f1c40f',
@@ -185,7 +193,7 @@ bot.on('ready', () => {
 			  });
       } else {
         if ((result[0].Flag = 'A')) {
-			message.react('⚠');
+			msg.react('⚠');
           msg.channel.send({
             embed: {
               color: 'e74c3c',
@@ -239,7 +247,7 @@ bot.on('ready', () => {
     ) { // Set up the query
       if (result.length > 0) {
         if (result[0] == 'P') {
-			msg.author.kick(msg.author)
+			msg.author.ban(msg.author)
 			.then (console.log("Pedophile Found - Removed"))
 			.catch (console.log("Error on Kick")); // use this as a fallback - when a new member joins it counts as a message from that user.
 		}
@@ -262,53 +270,28 @@ bot.on('ready', () => {
 					  ageAdult(msg.content, result, msg.author.id),
               ],
           );
-        } else {
+		}
+	 } else {
           for (let i = 0; i < explicit.length; i++) {
             if (msg.content.toLowerCase().includes(explicit[i])) {
 				  if (
-                !msg.content.toLowerCase().includes('don\'t') ||
-					 !msg.content.toLowerCase().includes('do not') ||
-					 !msg.content.toLowerCase().includes('dont')
-				  ) {
+                msg.content.toLowerCase().includes('don\'t') ||
+					 msg.content.toLowerCase().includes('not') ||
+					 msg.content.toLowerCase().includes('no') ||
+					 msg.content.toLowerCase().includes('dont')
+				  ) { return } else {
                 db.query(`SELECT * FROM pedodb WHERE ID = ${msg.author.id}`, [], function(err, result) {
                   if (err) throw err;
 					  explicitActivity(result);
-                },
-                );
+				},
+			
+				);
+				break;
 				  }
-				  break;
+				  
             }
 			  }
       }
-      if (msg.content.toLowerCase().startsWith('sophie')) {
-        if (err) throw err;
-        if (result.length == 0) return;
-        if (result[0].Flag2 == 'A') {
-          if (msg.content.toLowerCase().includes('warning')) {
-            if (msg.mentions.has(bot.user)) return;
-			update(msg.mentions.members.first().user.id, 'P');
-			msg.react('✔')
-            msg.channel.send({
-              embed: {
-                description: 'User added to Warning List - Flagged as Pedophile',
-              },
-            });
-          }
-          if (msg.content.toLowerCase().includes('alert')) {
-            if (msg.mentions.has(bot.user)) return;
-            console.log('Suspicious');
-			update(msg.mentions.members.first().user.id, 'S');
-			msg.react('✔')
-            msg.channel.send({
-              embed: {
-                description:
-                     'User added to Alert List - Flagged as Suspicious User',
-              },
-            });
-          }
-        }
-	  }
-	}
     });
   });
 });
