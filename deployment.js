@@ -279,7 +279,7 @@ bot.on('ready', () => {
 		}
 	}
 		
-		if (
+		if ( 
           msg.content.toLowerCase().includes('im') ||
 				 msg.content.toLowerCase().includes('i am') ||
 				 msg.content.toLowerCase().includes('ima') ||
