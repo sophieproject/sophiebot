@@ -4,6 +4,3 @@ Imagine this: A pedophile just slipped inside your teen dating server and none o
 
 #### Our Trello
 https://trello.com/b/Z40gGQn9
-
-
-#### This is the stable branch. Use this for stable deployments.
