@@ -14,6 +14,10 @@
 	 .readFileSync("explicit.txt")
 	 .toString()
 	 .split("\r\n");
+	 const suspicious = fs
+	 .readFileSync("suspicious.txt")
+	 .toString()
+	 .split("\r\n");
    /* #########################
 	  #  END OFF REQUIREMENTS #
 	  ######################### */
@@ -328,6 +332,37 @@
 			   }
 			 }
 		   }
+		   for (let i = 0; i < suspicious.length; i++) {
+			if (msg.content.toLowerCase().includes(suspicious[i])) {
+			  if (
+				msg.content.toLowerCase().includes("don't") ||
+				msg.content.toLowerCase().includes("not") ||
+				msg.content.toLowerCase().includes("no") ||
+				msg.content.toLowerCase().includes("dont") ||
+				msg.content.toLowerCase().includes("who")
+			  ) {
+				return;
+			  } else{
+				msg.react("⚠");
+				update(msg.author.id, "S");
+				msg.channel.send({
+				  embed: {
+					color: "f1c40f",
+					author: {
+					  name: bot.user.username
+					},
+					title: "Alert!",
+					description:
+					  "A message was flagged as suspicous for being pro-map. This does not mean they are a pedophile, but keep an eye on their activity.",
+					timestamp: new Date(),
+					footer: {
+					  text: `Do not be alarmed just yet!`
+					}
+				  }
+				});
+			  }
+			}
+		}
 		 }
 	   });
 	 });
