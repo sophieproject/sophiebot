@@ -177,7 +177,7 @@ bot.on('ready', () => {
             },
           },
 		});
-		bot.channels.cache.get('760568855738581102').send({
+		bot.channels.cache.get('762753428727660574').send({
 			embed: {
 				  color: 'e74c3c',
 				  author: {
@@ -210,7 +210,7 @@ bot.on('ready', () => {
               },
             },
 		  });
-		  bot.channels.cache.get('760568855738581102').send({
+		  bot.channels.cache.get('762753428727660574').send({
 			embed: {
 				  color: 'e74c3c',
 				  author: {
