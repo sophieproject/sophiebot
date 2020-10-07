@@ -7,22 +7,18 @@
     "cors": "^2.8.5",
     "discord.js": "^12.3.1",
     "dotenv": "^8.2.0",
-    "eslint": "^7.10.0",
     "express": "^4.17.1",
     "http": "0.0.1-security",
     "jshint": "^2.12.0",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "snoostorm": "^1.5.0",
+    "snoowrap": "^1.21.0"
   },
   "devDependencies": {
-    "eslint-config-google": "^0.14.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-promise": "^4.2.1"
   },
   "scripts": {
-    "start": "node development.js && node api.js"
+    "start": "node discord.js && node api.js"
   },
   "keywords": [],
   "author": "BossCore Technologies and Crix",
