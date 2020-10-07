@@ -4,3 +4,6 @@ Imagine this: A pedophile just slipped inside your teen dating server and none o
 
 #### Our Trello
 https://trello.com/b/Z40gGQn9
+
+### Notice
+Sophie will NOT be coming to Twitter! We applied for use of Twitter's API (required to make the bot) and they banned us from using the API. Because of this, we will not only not be supporting Twitter with our bot (mostly because we can't) we also won't be supporting Twitter as a platform, since they know there is a problem with pedophilia on their platform and they won't even let someone else help fix it, put aside fixing it themselves. We are working on using the Reddit API.
