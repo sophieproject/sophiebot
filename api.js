@@ -54,9 +54,9 @@ var server = app.listen(6969, "127.0.0.1", function () {
   
   });
   //rest api to get a single entry
-app.get('/:id', function (req, res) {
+app.get('/api/pedodb/:id', function (req, res) {
     try {
-    db.query("SELECT * FROM pedodb WHERE ID = ?", [req.params.id], function (error, results, fields) {
+    db.query("SELECT * FROM users WHERE ID = ?", [req.params.id], function (error, results, fields) {
        if (error){
            res.end(error)
        }
@@ -65,4 +65,7 @@ app.get('/:id', function (req, res) {
     } catch(e) {
          res.end(e)
      }
+ });
+ app.get('/api/ai/:string', function (req, res) {
+	// insert code for AI lookup
  });

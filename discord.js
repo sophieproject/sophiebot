@@ -93,23 +93,6 @@
 			 #  START OF FUNCTIONS   #
 			 ######################### */
    
-	   // Age Checker to check for a number in the age
-	   function ageCheck(string, min, max) {
-		 const found = string.match(/\d{2,3}/gm);
-		 let containsNumber = false;
-		 try {
-		   for (let i = 0; i < found.length; i++) {
-			 const number = parseInt(found[i]);
-			 if (number > min && number < max) {
-			   containsNumber = true;
-			 }
-		   }
-		   return containsNumber;
-		 } catch {
-		   return false;
-		 }
-	   }
-   
 	   function ageflair() {
 		 msg.channel.send({
 		   embed: {
@@ -300,12 +283,18 @@
 			 !msg.content.toLowerCase().includes("no")
 		   ) {
 			 if (err) throw err;
-			 multithread([
-			   ageMinor(msg.content, result, msg.author.id),
-			   ageYA(msg.content, result, msg.author.id),
-			   ageAdult(msg.content, result, msg.author.id)
-			 ]);
-		   }
+			 if (TimeStampAreOnSameDay(result[0].Timestamp, Date) && result[0].Age != age) {
+				ageflair()
+			} else {
+				const matches = string.match(/\s(\d+)\s/);
+				let age = matches ? +matches[1] : null;
+				if (age == null) {
+					
+				} else {
+
+				}
+			}
+
 		 } else {
 		   for (let i = 0; i < explicit.length; i++) {
 			 if (msg.content.toLowerCase().includes(explicit[i])) {
