@@ -45,7 +45,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 extended: true
 }));
 app.use(cors({origin: 'http://localhost'}));
-var server = app.listen(6969, "127.0.0.1", function () {
+var server = app.listen(8080, "127.0.0.1", function () {
 
     var host = server.address().address
     var port = server.address().port
@@ -67,5 +67,20 @@ app.get('/api/pedodb/:id', function (req, res) {
      }
  });
  app.get('/api/ai/:string', function (req, res) {
-	// insert code for AI lookup
+	const body = {
+		text: string,
+	}
+
+	fetch("http://localhost:5005/model/parse", {
+		method: "post",
+		body: JSON.stringify(body),
+		headers: { "Content-Type": "application/json" }
+	  })
+	  .then(res => res.json()) //res.json()
+	  .then(json => {
+		  const result = json
+		  console.log(result.intent)
+		  // (name) with extension confidence, discard the ID
+		})
+	  .catch(err => console.log(err))
  });

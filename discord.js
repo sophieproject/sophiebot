@@ -48,7 +48,7 @@ const commandFiles = fs.readdirSync('./discord').filter(file => file.endsWith('.
 
 for (const file of commandFiles) {
 	const command = require(`./discord/${file}`);
-	bot.commands.set(command.name, command);
+	bot.returns.set(command.name, command);
 }
 	 console.log("SOPHIE is active!");
    
@@ -92,17 +92,26 @@ for (const file of commandFiles) {
 	 bot.on("message", msg => {
 
 		const body = {
-			message: msg.content
+			text: msg.content,
+			message_id: msg.id
 		}
 
-		fetch("http://localhost:5005/webhooks/rest/webhook", {
+		fetch("http://localhost:5005/model/parse", {
 			method: "post",
 			body: JSON.stringify(body),
 			headers: { "Content-Type": "application/json" }
 		  })
-		  .then(res => res.json())
-		  .then(json => console.log(json))
+		  .then(res => res.json()) //res.json()
+		  .then(json => {
+			  const result = json
+			  console.log(result.intent)
+			  console.log(result.intent.name)
+			  console.log(result.intent.confidence)
+			  bot.commands.get(returns).execute(result.intent.name, result.intent.confidence);
+			})
 		  .catch(err => console.log(err))
+
+		  
 		});
    });
    
