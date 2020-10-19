@@ -9,7 +9,8 @@
    const Discord = require("discord.js");
    const bot = new Discord.Client();
    const mysql = require("mysql");
-   const fs = require("fs");
+   const fetch = require('node-fetch');
+   const fs = require('fs')
    /* #########################
 		 #  END OFF REQUIREMENTS #
 		 ######################### */
@@ -89,12 +90,20 @@ for (const file of commandFiles) {
 	 });
    
 	 bot.on("message", msg => {
-		fetch('https://localhost:5005/webhooks/rest/webhook') 
-    .then(res => res.json()) 
-	.then(json => console.log(json)); 
-	
-		bot.commands.get(command).execute(result, args);
-	 });
+
+		const body = {
+			message: msg.content
+		}
+
+		fetch("http://localhost:5005/webhooks/rest/webhook", {
+			method: "post",
+			body: JSON.stringify(body),
+			headers: { "Content-Type": "application/json" }
+		  })
+		  .then(res => res.json())
+		  .then(json => console.log(json))
+		  .catch(err => console.log(err))
+		});
    });
    
    bot.login(DiscordToken);
