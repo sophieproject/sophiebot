@@ -10,14 +10,6 @@
    const bot = new Discord.Client();
    const mysql = require("mysql");
    const fs = require("fs");
-   const explicit = fs
-	 .readFileSync("explicit.txt")
-	 .toString()
-	 .split("\r\n");
-   const suspicious = fs
-	 .readFileSync("suspicious.txt")
-	 .toString()
-	 .split("\r\n");
    /* #########################
 		 #  END OFF REQUIREMENTS #
 		 ######################### */
@@ -49,13 +41,13 @@
 	 db.connect(function(err) {
 	   if (err) throw err;
 	 });
-	 client.commands = new Discord.Collection();
+	 bot.commands = new Discord.Collection();
 
 const commandFiles = fs.readdirSync('./discord').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
 	const command = require(`./discord/${file}`);
-	client.commands.set(command.name, command);
+	bot.commands.set(command.name, command);
 }
 	 console.log("SOPHIE is active!");
    
@@ -97,293 +89,12 @@ for (const file of commandFiles) {
 	 });
    
 	 bot.on("message", msg => {
-<<<<<<< Updated upstream
-	   /* #########################
-			 #  START OF FUNCTIONS   #
-			 ######################### */
-   
-	   function ageflair() {
-		 msg.channel.send({
-		   embed: {
-			 color: "e74c3c",
-			 author: {
-			   name: bot.user.username
-			 },
-			 title: "WARNING",
-			 description:
-			   "This user has claimed to be older in the past, proceed with extreme caution!",
-			 timestamp: new Date(),
-			 footer: {
-			   text:
-				 "This bot is not 100% accurate and results may be flawed or incorrect."
-			 }
-		   }
-		 });
-	   }
-   
-	   function update(id, flags) {
-		 const sql = `INSERT INTO pedodb (ID, Flag) VALUES('${id}', '${flags}') ON DUPLICATE KEY UPDATE Flag='${flags}'`;
-		 db.query(sql, function(err) {
-		   if (err) throw err;
-		   console.log(`Database Updated: ${flags} Added for ${id}`);
-		 });
-	   }
-   
-	   function ageMinor(string, result, id) {
-		 if (ageCheck(string, "8", "16")) {
-		   if (result.length >= 1) {
-			 console.log(result[0].Flag);
-			 if (["A", "YA", "S", "P"].includes(result[0].Flag)) {
-			   ageflair();
-			 } else {
-			   update(id, "M");
-			   msg.react("👍");
-			 }
-		   } else {
-			 update(id, "M");
-			 msg.react("👍");
-		   }
-		 }
-	   }
-   
-	   function ageYA(string, result, id) {
-		 if (ageCheck(string, "17", "18")) {
-		   if (result.length >= 1) {
-			 console.log(result[0].Flag);
-			 if (["A", "S", "P"].includes(result[0].Flag)) {
-			   ageflair();
-			 } else {
-			   msg.react("👍");
-			   update(id, "YA");
-			 }
-		   } else {
-			 update(id, "YA");
-			 msg.react("👍");
-		   }
-		 }
-	   }
-   
-	   function ageAdult(string, result, id) {
-		 if (ageCheck(string, "19", "110")) {
-		   if (result.length >= 1) {
-			 if (["S", "P"].includes(result[0].Flag)) {
-			   ageflair();
-			 } else {
-			   update(id, "A");
-			   msg.react("👍");
-			 }
-		   } else {
-			 update(id, "A");
-			 msg.react("👍");
-		   }
-		 }
-	   }
-   
-	   function explicitActivity(result) {
-		 if (result.length < 1) {
-		   msg.react("⚠");
-		   msg.channel.send({
-			 embed: {
-			   color: "f1c40f",
-			   author: {
-				 name: bot.user.username
-			   },
-			   title: "Alert!",
-			   description:
-				 "I could not find this user's age in my database. Proceed with caution!",
-			   timestamp: new Date(),
-			   footer: {
-				 text: `Psst! You can set your age by saying "I am (age)", that way you won't be flagged again!`
-			   }
-			 }
-		   });
-		   /*
-			  bot.channels.cache.get('762753428727660574').send({
-				  embed: {
-						color: 'e74c3c',
-						author: {
-					  name: 'Automated Ticket',
-						},
-						title: `${msg.author.username}#${msg.author.discriminator}`,
-						description: `${msg.content}`,
-						timestamp: new Date(),
-						footer: {
-					  text: `${msg.author.id}`,
-						},
-				  },
-					});
-					*/
-		 } else {
-		   if ((result[0].Flag = "A")) {
-			 msg.react("⚠");
-			 msg.channel.send({
-			   embed: {
-				 color: "e74c3c",
-				 author: {
-				   name: bot.user.username
-				 },
-				 title: "WARNING",
-				 description:
-				   "This user may be an adult! Please proceed with extreme caution!",
-				 timestamp: new Date(),
-				 footer: {
-				   text:
-					 "This bot is not 100% accurate and results may be flawed or incorrect."
-				 }
-			   }
-			 });
-			 /*
-				bot.channels.cache.get('762753428727660574').send({
-				  embed: {
-						color: 'e74c3c',
-						author: {
-					  name: 'Automated Ticket',
-						},
-						title: `${msg.author.username}#${msg.author.discriminator}`,
-						description: `${msg.content}`,
-						timestamp: new Date(),
-						footer: {
-					  text: `${msg.author.id}`,
-						},
-				  },
-					});
-					*/
-		   }
-		 }
-	   }
-   
-	   function multithread(functions) {
-		 for (let i = 0; i < functions.length; i++) {
-		   setTimeout(function() {
-			 functions[i];
-		   }, 0.001);
-		 }
-	   }
-   
-	   /* #########################
-			 #   END OF FUNCTIONS    #
-			 ######################### */
-   
-	   if (msg.author.bot) return; // return if it's a bot
-	   db.query(`SELECT * FROM pedodb WHERE ID = ${msg.author.id}`, [], function(
-		 err,
-		 result
-	   ) {
-		 // Set up the query
-		 if (result.length == 1) {
-		   if (result[0] == "P") {
-			 msg.author
-			   .ban(msg.author)
-			   .then(console.log("Pedophile Found - Removed"))
-			   .catch(console.log("Error on Kick")); // use this as a fallback - when a new member joins it counts as a message from that user.
-		   }
-		 }
-   
-		 if (
-		   msg.content.toLowerCase().includes("im") ||
-		   msg.content.toLowerCase().includes("i am") ||
-		   msg.content.toLowerCase().includes("ima") ||
-		   msg.content.toLowerCase().includes("age:") ||
-		   msg.content.toLowerCase().includes("age :") ||
-		   msg.content.toLowerCase().includes("my age")
-		 ) {
-		   if (
-			 !msg.content.toLowerCase().includes("not") ||
-			 !msg.content.toLowerCase().includes("no")
-		   ) {
-			 if (err) throw err;
-			 if (TimeStampAreOnSameDay(result[0].Timestamp, Date) && result[0].Age != age) {
-				ageflair()
-			} else {
-				const matches = string.match(/\s(\d+)\s/);
-				let age = matches ? +matches[1] : null;
-				if (age == null) {
-					
-				} else {
-
-				}
-			}
-
-		 } else {
-		   for (let i = 0; i < explicit.length; i++) {
-			 if (msg.content.toLowerCase().includes(explicit[i])) {
-			   if (
-				 msg.content.toLowerCase().includes("don't") ||
-				 msg.content.toLowerCase().includes("not") ||
-				 msg.content.toLowerCase().includes("no") ||
-				 msg.content.toLowerCase().includes("dont")
-			   ) {
-				 return;
-			   } else {
-				 db.query(
-				   `SELECT * FROM pedodb WHERE ID = ${msg.author.id}`,
-				   [],
-				   function(err, result) {
-					 if (err) throw err;
-					 if (result[0].Flag == "M" || result[0].Flag == "YA") {
-					 } else {
-					   explicitActivity(result);
-					 }
-				   }
-				 );
-				 break;
-			   }
-			 }
-		   }
-		   for (let i = 0; i < suspicious.length; i++) {
-			 if (msg.content.toLowerCase().includes(suspicious[i])) {
-			   if (
-				 msg.content.toLowerCase().includes("don't") ||
-				 msg.content.toLowerCase().includes("not") ||
-				 msg.content.toLowerCase().includes("no") ||
-				 msg.content.toLowerCase().includes("dont") ||
-				 msg.content.toLowerCase().includes("who") ||
-				 msg.content.toLowerCase().includes("disgusting") ||
-				 msg.content.toLowerCase().includes("sick") ||
-				 msg.content.toLowerCase().includes("perverted")
-			   ) {
-				 return;
-			   } else {
-				 if (
-				   msg.content.toLowerCase().includes("i") ||
-				   msg.content.toLowerCase().includes("me") ||
-				   msg.content.toLowerCase().includes("my")
-				 ) {
-				   msg.react("⚠");
-				   update(msg.author.id, "S");
-				   msg.channel.send({
-					 embed: {
-					   color: "f1c40f",
-					   author: {
-						 name: bot.user.username
-					   },
-					   title: "Alert!",
-					   description:
-						 "A message was flagged as suspicous for being pro-map. This does not mean they are a pedophile, but keep an eye on their activity.",
-					   timestamp: new Date(),
-					   footer: {
-						 text: `Do not be alarmed just yet!`
-					   }
-					 }
-				   });
-				 }
-			   }
-			 }
-		   }
-		 }
-	   }
-	   });
-	});
-});
-
-=======
 		fetch('https://localhost:5005/webhooks/rest/webhook') 
     .then(res => res.json()) 
 	.then(json => console.log(json)); 
 	
-		client.commands.get(command).execute(result, args);
+		bot.commands.get(command).execute(result, args);
 	 });
    });
->>>>>>> Stashed changes
    
    bot.login(DiscordToken);
