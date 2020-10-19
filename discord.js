@@ -49,6 +49,14 @@
 	 db.connect(function(err) {
 	   if (err) throw err;
 	 });
+	 client.commands = new Discord.Collection();
+
+const commandFiles = fs.readdirSync('./discord').filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const command = require(`./discord/${file}`);
+	client.commands.set(command.name, command);
+}
 	 console.log("SOPHIE is active!");
    
 	 bot.on("guildMemberAdd", member => {
@@ -89,6 +97,7 @@
 	 });
    
 	 bot.on("message", msg => {
+<<<<<<< Updated upstream
 	   /* #########################
 			 #  START OF FUNCTIONS   #
 			 ######################### */
@@ -367,5 +376,14 @@
 	});
 });
 
+=======
+		fetch('https://localhost:5005/webhooks/rest/webhook') 
+    .then(res => res.json()) 
+	.then(json => console.log(json)); 
+	
+		client.commands.get(command).execute(result, args);
+	 });
+   });
+>>>>>>> Stashed changes
    
    bot.login(DiscordToken);
