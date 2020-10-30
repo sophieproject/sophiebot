@@ -10,6 +10,7 @@
     "mysql": "^2.18.1"
   },
   "devDependencies": {
+    "nodemon": "^2.0.6"
   },
   "scripts": {
     "start": "node discord.js && node api.js"
