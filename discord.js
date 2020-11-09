@@ -385,6 +385,12 @@ db.connect(function(err) {
                   } else {
                     pointupdate(msg, result[0].Points);
                   }
+                  // also log the message
+                  db.query(
+                      `INSERT INTO messages (Author, Message) VALUES('${msg.author.id}', '${msg.content})`,
+                      function(err) {
+                        if (err) log(err);
+                      }); // We may have a legal obligation to report these messages, if it is a false-positive they are purged.
                 }
               } else {
                 const APIEntity = APIresult.entities;
