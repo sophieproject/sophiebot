@@ -17,7 +17,7 @@ timeout /t 3
 
 IF EXIST .\node_modules\ (
 echo "node_modules exists starting npm."
-npm start
+start "npm start"
 ) ELSE (
 echo "node_modules doesn't exist."
 echo "installing node_modules"
