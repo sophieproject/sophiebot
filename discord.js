@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 /* eslint-disable linebreak-style */ // <- I blame Windows Formatting for that
 /* eslint-disable max-len */
 /* eslint-disable require-jsdoc */
@@ -7,7 +6,7 @@
    #  REQUIREMENTS  #
    ################## */
    require("dotenv").config();
-   const Discord = require("discord.js");
+   
    const bot = new Discord.Client();
    const mysql = require("mysql");
    const fetch = require("node-fetch");
@@ -187,7 +186,6 @@
    });
    
    bot.login(DiscordToken);
-=======
 /*
 This project was made by the Sophie Foundation and
 is protected under the MIT License.
@@ -623,4 +621,3 @@ db.connect(function(err) {
   });
   client.login(DiscordToken);
 });
->>>>>>> Stashed changes
