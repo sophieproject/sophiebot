@@ -9,4 +9,6 @@ https://trello.com/b/Z40gGQn9
 Sophie is going to go under a massive re-development over the next few days. We will be programming an entire Sophie Core, recoding the API, and creating an AI that can help detect speech patterns of a pedophile. Because of this, this repo will have a lot of activity. If you want a more stable version, please refer to the Stable branch.
 
 ### Notice
-Sophie will NOT be coming to Twitter! We have applied for their API and were denied, and we intend to respect their wishes to not allow Sophie on their platform.
+Sophie will NOT be coming to Twitter! We have applied for their API and were denied, and we intend to respect their wishes to not allow Sophie on their platform.''
+
+This branch is likely not runnable or stable by any means, it serves as a reference point for our code.
