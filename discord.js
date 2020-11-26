@@ -1,7 +1,3 @@
-/* eslint-disable linebreak-style */ // <- I blame Windows Formatting for that
-/* eslint-disable max-len */
-/* eslint-disable require-jsdoc */
-// Ignore the above information - just for eslint linting
 /* ##################
    #  REQUIREMENTS  #
    ################## */
