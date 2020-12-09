@@ -1,21 +1,20 @@
 {
   "name": "sophiebot",
-  "version": "0.0.9",
-  "description": "A bot designed to prevent pedophiles from communicating with minors on the internet",
+  "version": "1.0.0",
+  "description": "The bot that is designed to protect children from pedophiles online",
   "main": "index.js",
   "scripts": {
-    "test": "index.js"
+    "test": "./tools/tools.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sophieproject/sophiebot.git"
   },
   "keywords": [
-    "pedophiles",
-    "pedophilia",
-    "automation",
-    "automoderation",
-    "child",
+    "anti-map",
+    "anti-pedophile",
+    "children",
+    "children",
     "protection"
   ],
   "author": "The Sophie Foundation",
@@ -25,12 +24,9 @@
   },
   "homepage": "https://github.com/sophieproject/sophiebot#readme",
   "dependencies": {
-    "discord.js": "^12.4.1",
+    "@nlpjs/basic": "^4.17.1",
+    "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
-    "mysql": "^2.18.1"
-  },
-  "devDependencies": {
-    "eslint": "^7.12.1",
-    "eslint-config-google": "^0.14.0"
+    "sqlite3": "^5.0.0"
   }
 }
