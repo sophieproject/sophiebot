@@ -2,16 +2,17 @@ const fs = require("fs");
 const { dockStart } = require("@nlpjs/basic");
 const sqlite3 = require("sqlite3").verbose();
 let db = new sqlite3.Database("./data/sophie.db");
+const main = require('./core.js')
 var path = require("path");
 global.root = path.resolve(__dirname);
 
-function msgCheck(message) {
+exports.msgCheck = function(message){
   async () => {
     const response = await nlp.process("en", message);
     return response;
   };
 }
-  function timestamp() {
+  exports.timestamp = function() {
     const dateOb = new Date();
 
     // current date
@@ -47,7 +48,7 @@ function msgCheck(message) {
       seconds
     );
   }
-  function date() {
+  exports.date = function() {
     const dateOb = new Date();
 
     // current date
@@ -62,11 +63,11 @@ function msgCheck(message) {
     return year + "-" + month + "-" + date;
   }
 
-  function log(content) {
+  exports.log = function(content) {
     // logging function
     fs.appendFileSync(
-      `${root}/logs/${date()}.txt`,
-      `\n [${timestamp()}] ${content}`,
+      `${root}/logs/${main.date()}.txt`,
+      `\n [${main.timestamp()}] ${content}`,
       error => {
         // logging function
         if (error) {
@@ -78,13 +79,13 @@ function msgCheck(message) {
     console.log(content);
   }
 
-  function userPoints(username) {
+  exports.userPoints = function(username) {
     db.run(
       `SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?`,
       [username],
       function(err, result) {
         if (err) {
-          log(err);
+          main.log(err);
           return err;
         }
         if (result.length < 2) return "404";
@@ -98,13 +99,13 @@ function msgCheck(message) {
     );
   }
 
-  function userAge(username) {
+  exports.userAge = function(username) {
     db.run(
       `SELECT Age, Timestamp FROM users WHERE Username = ?`,
       [username],
       function(err, result) {
         if (err) {
-          log(err);
+          main.log(err);
           return err;
         }
         if (result.length < 2) return "404";
@@ -113,55 +114,55 @@ function msgCheck(message) {
     );
   }
 
-  function update(username, age, points) {
+  exports.update = function(username, age, points) {
     db.run(`SELECT * FROM users WHERE Username = ?`, [username], function(
       err,
       result
     ) {
-      if (err) log(err);
+      if (err) main.log(err);
       if (result.length > 2) {
         UserID = result[0].ID;
         db.run(
           `INSERT INTO users (ID, Age, Points, Modified) VALUES('${UserID}', '${age}', '${points}', ${date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${date()}'`,
           function(err) {
-            if (err) log(err);
+            if (err) main.log(err);
           }
         );
       } else {
         db.run(
           `INSERT INTO users (Username, Age, Points, Modified) VALUES('${username}', '${age}', '${points}', ${date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${date()}'`,
           function(err) {
-            if (err) log(err);
+            if (err) main.log(err);
           } // hash the Username later, and anticipate hashed usernames
         );
       }
     });
   }
 
-  function userBirthday(username, age) {
+ exports.userBirthday = function(username, age) {
     if (age > 117) return "606";
     db.run(
       `SELECT Age, Modified FROM users WHERE Username = ?`,
       [username],
       function(err, result) {
         if (err) {
-          log(err);
+          main.log(err);
           return err;
         }
         let currentAge = userAge(username);
         if (age > currentAge + 1) return "606";
-        if ((result[0].Modified = date())) return "606";
-        update(username, age);
+        if ((result[0].Modified = main.date())) return "606";
+        main.update(username, age);
       }
     );
   }
 
-  function allPedophiles() {
+  exports.allPedophiles = function() {
     db.run("SELECT Username FROM users WHERE Pedophile = '1'", [], function(
       err,
       result
     ) {
-      if (err) log(err);
+      if (err) main.log(err);
       blacklist = [];
       for (let i = 0; i < result.length; i++) {
         blacklist.push(result[i].ID);
@@ -169,5 +170,3 @@ function msgCheck(message) {
       return blacklist;
     });
   }
-
-module.exports = timestamp(), log(), msgCheck(), update(), allPedophiles(), userBirthday(), userAge(), userPoints()

@@ -6,13 +6,13 @@ const { dockStart } = require('@nlpjs/basic');
 
 
 function init() {
-main.log("Starting Discord bot initiation sequence.")
+main.log("Starting Discord bot initiation sequence.");
 
 (async () => {
-  main.log("Loading configuration (3/3)")
+  main.log("Loading configuration (3/3)");
   DiscordToken = process.env.DiscordToken;
   const bot = new Discord.Client();
-  main.log("Configuration loaded! (3/3)")
+  main.log("Configuration loaded! (3/3)");
 
   bot.on("ready", () => {
       main.log("Sophie is online!")
