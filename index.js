@@ -20,20 +20,19 @@ Sophiebot is protected under the MIT License
 
 // training the AI here so it doesn't have to be done
 // on every crash to minimize downtime
-const { dockStart } = require('@nlpjs/basic');
+const {dockStart} = require('@nlpjs/basic');
 const core = require('./core.js');
 
 (async () => {
-const dock = await dockStart({ use: ['Basic']});
-const nlp = dock.get('nlp');
-core.log("Loading the Sophie Model (1/3)");
-await nlp.addCorpus(`./models/en.json`);
-core.log("Sophie Model loaded! (1/3)")
-core.log("Training the Sophie AI Model (2/3)")
-await nlp.train();
-core.log("Sophie AI finished training! (2/3)")
-})
+  const dock = await dockStart({use: ['Basic']});
+  const nlp = dock.get('nlp');
+  core.log('Loading the Sophie Model (1/3)');
+  await nlp.addCorpus('./models/en.json');
+  core.log('Sophie Model loaded! (1/3)');
+  core.log('Training the Sophie AI Model (2/3)');
+  await nlp.train();
+  core.log('Sophie AI finished training! (2/3)');
+});
 
-const discord = require('./bots/discord.js')
-    discord.init()
-    
+const discord = require('./bots/discord.js');
+discord.init();

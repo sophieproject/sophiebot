@@ -28,5 +28,9 @@
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.15.0",
+    "eslint-config-google": "^0.14.0"
   }
 }
