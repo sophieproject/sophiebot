@@ -16,6 +16,7 @@ core.log("Starting Discord bot initiation sequence.")
 
   bot.on("ready", () => {
       core.log("Sophie is online!")
+      bot.user.setActivity("the chats.", {type: "WATCHING"});
     bot.on('guildCreate', (guild) => { // this is for removing all pedophiles in guild
         blacklist = core.allPedophiles()
           for (let i = 0; i < blacklist.length; i++) {
