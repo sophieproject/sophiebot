@@ -1,4 +1,4 @@
-const core = require('./core.js') // require SQLite functions, logging, etc
+const core = require('C:/Users/billy/Documents/GitHub/thesophiebot/core.js') // require SQLite functions, logging, etc
 // we packaged everything in core.js to make it easier to fix bugs and add more bots
 require('dotenv').config();
 const Discord = require('discord.js');

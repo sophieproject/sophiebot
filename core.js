@@ -12,13 +12,7 @@ async function msgcheck(message) {
   }
 
   function log(content) { // logging function
-    const today = new Date();
-    const date =
-      today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
-    const time =
-      today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
-    const timestamp = date + ' @ ' + time;
-    fs.appendFileSync(`${root}/logs/${date}.txt`, `\n [${timestamp}] ${content}`, (error) => {
+    fs.appendFileSync(`${root}/logs/${date()}.txt`, `\n [${timestamp()}] ${content}`, (error) => {
       // logging function
       if (error) {
         console.error('Error on Logging: ' + error);
@@ -87,7 +81,7 @@ async function msgcheck(message) {
   }
 
 function userPoints(username) {
-  db.query(`SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?`, [username], function(
+  db.run(`SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?`, [username], function(
     err,
     result,
 ) {
@@ -103,7 +97,7 @@ if (result[0].Suspicious = 1) {
 }
 
 function userAge(username) {
-  db.query(`SELECT Age, Timestamp FROM users WHERE Username = ?`, [username], function(
+  db.run(`SELECT Age, Timestamp FROM users WHERE Username = ?`, [username], function(
     err,
     result,
 ) {
@@ -115,7 +109,7 @@ function userAge(username) {
 
 function userBirthday(username, age) {
   if (age > 117) return('606');
-  db.query(`SELECT Age, Modified FROM users WHERE Username = ?`, [username], function(
+  db.run(`SELECT Age, Modified FROM users WHERE Username = ?`, [username], function(
     err,
     result,
 ) {
@@ -129,7 +123,7 @@ function userBirthday(username, age) {
 }
 
 function allPedophiles() {
-  db.query("SELECT Username FROM users WHERE Pedophile = '1'", [], function(
+  db.run("SELECT Username FROM users WHERE Pedophile = '1'", [], function(
     err,
     result,
 ) {
@@ -138,26 +132,26 @@ function allPedophiles() {
   for (let i = 0; i < result.length; i++) {
     blacklist.push(result[i].ID);
   }
-});
   return blacklist
+});
 }
 
 function update(username, age, points) {
-  db.query(`SELECT * FROM users WHERE Username = ?`, [username], function(
+  db.run(`SELECT * FROM users WHERE Username = ?`, [username], function(
       err,
       result,
   ) {
     if (err) log(err);
     if (result.length > 2) {
       UserID = result[0].ID;
-      db.query(
+      db.run(
           `INSERT INTO users (ID, Age, Points, Modified) VALUES('${UserID}', '${age}', '${points}', ${date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${date()}'`,
           function(err) {
             if (err) log(err);
           },
       );
     } else {
-      db.query(
+      db.run(
           `INSERT INTO users (Username, Age, Points, Modified) VALUES('${username}', '${age}', '${points}', ${date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${date()}'`,
           function(err) {
             if (err) log(err);
@@ -167,4 +161,4 @@ function update(username, age, points) {
   });
 }
 
-module.exports = timestamp(), log(), msgcheck(), update(), allPedophiles(), userBirthday(), userAge(), userPoints()
+exports.core = timestamp(), log(), msgcheck(), update(), allPedophiles(), userBirthday(), userAge(), userPoints()
