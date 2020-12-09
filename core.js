@@ -11,17 +11,6 @@ async function msgcheck(message) {
   return response
   }
 
-  function log(content) { // logging function
-    fs.appendFileSync(`${root}/logs/${date()}.txt`, `\n [${timestamp()}] ${content}`, (error) => {
-      // logging function
-      if (error) {
-        console.error('Error on Logging: ' + error);
-        process.exit('LOG_ERROR');
-      }
-    });
-    console.log(content);
-  }
-
   function timestamp() {
     const dateOb = new Date();
   
@@ -80,6 +69,17 @@ async function msgcheck(message) {
     );
   }
 
+  function log(content) { // logging function
+    fs.appendFileSync(`${root}/logs/${date()}.txt`, `\n [${timestamp()}] ${content}`, (error) => {
+      // logging function
+      if (error) {
+        console.error('Error on Logging: ' + error);
+        process.exit('LOG_ERROR');
+      }
+    });
+    console.log(content);
+  }
+
 function userPoints(username) {
   db.run(`SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?`, [username], function(
     err,
@@ -105,6 +105,31 @@ function userAge(username) {
   if (result.length < 2) return("404");
   return(result[0].Age)
 });
+}
+
+function update(username, age, points) {
+  db.run(`SELECT * FROM users WHERE Username = ?`, [username], function(
+      err,
+      result,
+  ) {
+    if (err) log(err);
+    if (result.length > 2) {
+      UserID = result[0].ID;
+      db.run(
+          `INSERT INTO users (ID, Age, Points, Modified) VALUES('${UserID}', '${age}', '${points}', ${date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${date()}'`,
+          function(err) {
+            if (err) log(err);
+          },
+      );
+    } else {
+      db.run(
+          `INSERT INTO users (Username, Age, Points, Modified) VALUES('${username}', '${age}', '${points}', ${date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${date()}'`,
+          function(err) {
+            if (err) log(err);
+          }, // hash the Username later, and anticipate hashed usernames
+      );
+    }
+  });
 }
 
 function userBirthday(username, age) {
@@ -134,31 +159,6 @@ function allPedophiles() {
   }
   return blacklist
 });
-}
-
-function update(username, age, points) {
-  db.run(`SELECT * FROM users WHERE Username = ?`, [username], function(
-      err,
-      result,
-  ) {
-    if (err) log(err);
-    if (result.length > 2) {
-      UserID = result[0].ID;
-      db.run(
-          `INSERT INTO users (ID, Age, Points, Modified) VALUES('${UserID}', '${age}', '${points}', ${date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${date()}'`,
-          function(err) {
-            if (err) log(err);
-          },
-      );
-    } else {
-      db.run(
-          `INSERT INTO users (Username, Age, Points, Modified) VALUES('${username}', '${age}', '${points}', ${date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${date()}'`,
-          function(err) {
-            if (err) log(err);
-          }, // hash the Username later, and anticipate hashed usernames
-      );
-    }
-  });
 }
 
 exports.core = timestamp(), log(), msgcheck(), update(), allPedophiles(), userBirthday(), userAge(), userPoints()
