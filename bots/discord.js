@@ -1,4 +1,4 @@
-const core = require('C:/Users/billy/Documents/GitHub/thesophiebot/core.js') // require SQLite functions, logging, etc
+const main = require('C:/Users/billy/Documents/GitHub/thesophiebot/core.js') // require SQLite functions, logging, etc
 // we packaged everything in core.js to make it easier to fix bugs and add more bots
 require('dotenv').config();
 const Discord = require('discord.js');
@@ -6,19 +6,19 @@ const { dockStart } = require('@nlpjs/basic');
 
 
 function init() {
-core.log("Starting Discord bot initiation sequence.")
+main.log("Starting Discord bot initiation sequence.")
 
 (async () => {
-  core.log("Loading configuration (3/3)")
+  main.log("Loading configuration (3/3)")
   DiscordToken = process.env.DiscordToken;
   const bot = new Discord.Client();
-  core.log("Configuration loaded! (3/3)")
+  main.log("Configuration loaded! (3/3)")
 
   bot.on("ready", () => {
-      core.log("Sophie is online!")
+      main.log("Sophie is online!")
       bot.user.setActivity("the chats.", {type: "WATCHING"});
     bot.on('guildCreate', (guild) => { // this is for removing all pedophiles in guild
-        blacklist = core.allPedophiles()
+        blacklist = main.allPedophiles()
           for (let i = 0; i < blacklist.length; i++) {
             // remove all marked pedophiles
             guild.members.kick(blacklist[i]).catch()
@@ -27,15 +27,15 @@ core.log("Starting Discord bot initiation sequence.")
       });
 
       bot.on('guildMemberAdd', (member) => {
-        if(core.userPoints(member.id) = "P") {
+        if(main.userPoints(member.id) = "P") {
               member.kick().catch()
             }
       }); // this will remove the pedophiles when they join back, making a softban
 
     bot.on("message", msg => {
-        const score = core.userPoints(msg.author.id)
-        if (score = "P"){ msg.author.kick().catch(); return; }
-        if (score = "404") {
+        const smain = main.userPoints(msg.author.id)
+        if (smain = "P"){ msg.author.kick().catch(); return; }
+        if (smain = "404") {
             msg.author.createDM().then(() => {
                 msg.author
                     .send(
@@ -50,12 +50,12 @@ core.log("Starting Discord bot initiation sequence.")
               msg.delete();
               return;
         }
-        if (score > 10) { // add a setting to change this
+        if (smain > 10) { // add a setting to change this
            msg.delete();
            return;
            // not kicking because there is time for an appeal
         }
-        const message = core.msgcheck(msg)
+        const message = main.msgcheck(msg)
         // intent handling here
         console.log(message)
     });
