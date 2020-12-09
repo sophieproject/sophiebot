@@ -1,9 +1,0 @@
-# Sophie Logs
-/logs
-
-# Node Modules
-/node_modules
-
-# Sensitive Data
-*.env
-*.db
