@@ -6,12 +6,14 @@ let db = new sqlite3.Database('./data/sophie.db')
 var path = require('path');
 global.root = path.resolve(__dirname);
 
-async function msgcheck(message) {
+module.exports = {
+
+msgcheck = async function msgcheck(message) {
   const response = await nlp.process('en', message);
   return response
-  }
+  },
 
-  function timestamp() {
+  timestamp = function timestamp() {
     const dateOb = new Date();
   
     // current date
@@ -46,9 +48,9 @@ async function msgcheck(message) {
       ':' +
       seconds
     );
-  }
+  },
 
-  function date() {
+ date = function date() {
     const dateOb = new Date();
   
     // current date
@@ -67,9 +69,9 @@ async function msgcheck(message) {
       '-' +
       date
     );
-  }
+  },
 
-  function log(content) { // logging function
+ log = function log(content) { // logging function
     fs.appendFileSync(`${root}/logs/${date()}.txt`, `\n [${timestamp()}] ${content}`, (error) => {
       // logging function
       if (error) {
@@ -78,9 +80,9 @@ async function msgcheck(message) {
       }
     });
     console.log(content);
-  }
+  },
 
-function userPoints(username) {
+userPoints = function userPoints(username) {
   db.run(`SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?`, [username], function(
     err,
     result,
@@ -94,9 +96,9 @@ if (result[0].Suspicious = 1) {
   return(result[0].Points)
 }
 });
-}
+},
 
-function userAge(username) {
+userAge = function userAge(username) {
   db.run(`SELECT Age, Timestamp FROM users WHERE Username = ?`, [username], function(
     err,
     result,
@@ -105,9 +107,9 @@ function userAge(username) {
   if (result.length < 2) return("404");
   return(result[0].Age)
 });
-}
+},
 
-function update(username, age, points) {
+update = function update(username, age, points) {
   db.run(`SELECT * FROM users WHERE Username = ?`, [username], function(
       err,
       result,
@@ -130,9 +132,9 @@ function update(username, age, points) {
       );
     }
   });
-}
+},
 
-function userBirthday(username, age) {
+userBirthday = function userBirthday(username, age) {
   if (age > 117) return('606');
   db.run(`SELECT Age, Modified FROM users WHERE Username = ?`, [username], function(
     err,
@@ -145,9 +147,9 @@ function userBirthday(username, age) {
   update(username, age)
 });
 
-}
+},
 
-function allPedophiles() {
+allPedophiles = function allPedophiles() {
   db.run("SELECT Username FROM users WHERE Pedophile = '1'", [], function(
     err,
     result,
@@ -159,6 +161,7 @@ function allPedophiles() {
   }
   return blacklist
 });
+}
 }
 
 exports.core = timestamp(), log(), msgcheck(), update(), allPedophiles(), userBirthday(), userAge(), userPoints()

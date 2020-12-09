@@ -9,10 +9,10 @@ function init() {
 core.log("Starting Discord bot initiation sequence.")
 
 (async () => {
-  core.log("Loading configuration (3/?)")
+  core.log("Loading configuration (3/3)")
   DiscordToken = process.env.DiscordToken;
   const bot = new Discord.Client();
-  core.log("Configuration loaded! (3/?)")
+  core.log("Configuration loaded! (3/3)")
 
   bot.on("ready", () => {
       core.log("Sophie is online!")
