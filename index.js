@@ -23,7 +23,6 @@ Sophiebot is protected under the MIT License
 const {dockStart} = require('@nlpjs/basic');
 const { Integration } = require('discord.js');
 const core = require('./core.js');
-
 async function Init(){
   const dock = await dockStart({ use: ['Basic']});
   global.nlp = dock.get('nlp');
