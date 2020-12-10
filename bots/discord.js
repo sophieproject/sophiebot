@@ -1,4 +1,4 @@
-const main = require('./core.js'); // require SQLite functions, logging, etc
+const main = require('../core.js'); // require SQLite functions, logging, etc
 // we packaged everything in core.js to make it easier to fix bugs and add more bots
 require('dotenv').config();
 const Discord = require('discord.js');
@@ -31,12 +31,14 @@ async function init() {
     }); // this will remove the pedophiles when they join back, making a softban
 
     bot.on('message', (msg) => {
+      if (msg.author.bot) return
+      async function onMessage(){
       const smain = await main.userPoints(msg.author.id);
-      console.log(await main.userPoints(msg.author.id))
+      console.log(smain)
       if (smain == 'P') {
         msg.author.kick().catch(); return;
       }
-      if (smain == '404') {
+      if (smain === undefined) {
         msg.author.createDM().then(() => {
           msg.author
               .send(
@@ -48,7 +50,6 @@ async function init() {
                 ),
               );
         });
-        msg.delete();
         return;
       }
       if (smain > 10) { // add a setting to change this
@@ -56,10 +57,11 @@ async function init() {
         return;
         // not kicking because there is time for an appeal
       }
-      const message = await main.msgCheck(msg.content);
+      const message = main.msgCheck(msg.content);
       // intent handling here
-      console.log(message);
-    });
+    }
+    onMessage();
+  });
     bot.login(DiscordToken);
 }
 // start the INIT sequence

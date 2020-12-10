@@ -79,22 +79,24 @@ exports.log = function(content) {
   console.log(content);
 };
 
-exports.userPoints = function(username) {
+exports.userPoints = async function(username) {
   db.run(
       'SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?',
       [username],
-      function(err, result) {
+      function (err, result) { // result: {"Points": 0 , "Pedophile": 0, "Suspicious": 0}
         if (err) {
           main.log(err);
-          return err;
+          return err; 
         }
-        if (result == undefined) return '404';
+        console.log(result);
+        if (result === undefined) return '404';
         if (result[0].Pedophile = '1') return 'P';
-        if (result[0].Suspicious = '1') {
-          return 'S' + result[0].Points;
-        } else {
-          return result[0].Points;
-        }
+        if (result[0].Suspicious = '1') return 'S' + result[0].Points;
+        return result[0].Points;
+           
+        
+
+        
       },
   );
 };
@@ -108,7 +110,7 @@ exports.userAge = function(username) {
           main.log(err);
           return err;
         }
-        if (result.length < 2) return '404';
+        if (result === undefined) return '404';
         return result[0].Age;
       },
   );
@@ -120,7 +122,7 @@ exports.update = function(username, age, points) {
       result,
   ) {
     if (err) main.log(err);
-    if (result.length > 2) {
+    if (result === undefined) {
       const UserID = result[0].ID;
       db.run(
           `INSERT INTO users (ID, Age, Points, Modified) VALUES('${UserID}', '${age}', '${points}', ${main.date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${main.date()}'`,
