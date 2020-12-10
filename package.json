@@ -4,7 +4,9 @@
   "description": "The bot that is designed to protect children from pedophiles online",
   "main": "index.js",
   "scripts": {
-    "test": "./tools/tools.js"
+    "create-db":"tools/create_db.js",
+    "test-ai":"tools/ai.js",
+    "start":"index.js"
   },
   "repository": {
     "type": "git",

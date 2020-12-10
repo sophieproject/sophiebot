@@ -7,3 +7,7 @@
 # Sensitive Data
 *.env
 *.db
+
+# AI Models
+/models
+model.nlp

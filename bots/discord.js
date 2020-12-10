@@ -2,22 +2,18 @@ const main = require('C:/Users/billy/Documents/GitHub/thesophiebot/core.js'); //
 // we packaged everything in core.js to make it easier to fix bugs and add more bots
 require('dotenv').config();
 const Discord = require('discord.js');
-const {dockStart} = require('@nlpjs/basic');
-const dock = await dockStart({use: ['Basic']});
-const nlp = dock.get('nlp');
 
 
-function init() {
+
+async function init() {
   main.log('Starting Discord bot initiation sequence.');
-
-  (async () => {
     main.log('Loading configuration (3/3)');
     const DiscordToken = process.env.DiscordToken;
     const bot = new Discord.Client();
     main.log('Configuration loaded! (3/3)');
 
     bot.on('ready', () => {
-      main.log('Sophie is online!');
+      main.log('Sophie is active on Discord!');
       bot.user.setActivity('the chats.', {type: 'WATCHING'});
       bot.on('guildCreate', (guild) => { // this is for removing all pedophiles in guild
         const blacklist = main.allPedophiles();
@@ -35,7 +31,8 @@ function init() {
     }); // this will remove the pedophiles when they join back, making a softban
 
     bot.on('message', (msg) => {
-      const smain = main.userPoints(msg.author.id);
+      const smain = await main.userPoints(msg.author.id);
+      console.log(await main.userPoints(msg.author.id))
       if (smain == 'P') {
         msg.author.kick().catch(); return;
       }
@@ -59,12 +56,11 @@ function init() {
         return;
         // not kicking because there is time for an appeal
       }
-      const message = main.msgcheck(msg);
+      const message = await main.msgCheck(msg.content);
       // intent handling here
       console.log(message);
     });
     bot.login(DiscordToken);
-  });
 }
 // start the INIT sequence
 

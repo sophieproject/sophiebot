@@ -3,14 +3,14 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./data/sophie.db');
 const main = require('./core.js');
 require('dotenv').config();
-const path = require('path');
-const root = path.resolve(__dirname);
+
+async function msgCheck1(message){
+  const response = await nlp.process('en', message);
+  return response;
+}
 
 exports.msgCheck = function(message) {
-  async () => {
-    const response = await nlp.process('en', message);
-    return response;
-  };
+return(msgCheck1(message));
 };
 exports.timestamp = function() {
   const dateOb = new Date();
@@ -66,7 +66,7 @@ exports.date = function() {
 exports.log = function(content) {
   // logging function
   fs.appendFileSync(
-      `${root}/logs/${main.date()}.txt`,
+      `./logs/${main.date()}.txt`,
       `\n [${main.timestamp()}] ${content}`,
       (error) => {
         // logging function
@@ -88,7 +88,7 @@ exports.userPoints = function(username) {
           main.log(err);
           return err;
         }
-        if (result.length < 2) return '404';
+        if (result == undefined) return '404';
         if (result[0].Pedophile = '1') return 'P';
         if (result[0].Suspicious = '1') {
           return 'S' + result[0].Points;
