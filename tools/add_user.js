@@ -31,4 +31,5 @@ function userUpdate(username, suspicious, pedophile) {
   };
 
 var Args = process.argv.slice(2);
+main.log(`ID: ${Args[0]} Suspicious? ${Args[1]} Pedophile? ${Args[2]}`); //Log admin actions
 userUpdate(Args[0], Args[1], Args[2])
