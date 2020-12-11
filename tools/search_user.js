@@ -3,7 +3,7 @@ const db = new sqlite3.Database("./data/sophie.db");
 const main = require("../core.js");
 
 function search_user(username) {
-  db.run("SELECT * FROM users WHERE Username = ?", [username], function(
+  db.get("SELECT * FROM users WHERE Username = ?", [username], function(
     err,
     result
   ) {

@@ -31,38 +31,42 @@ async function init() {
 
   bot.on("message", msg => {
     if (msg.author.bot) return;
-    async function onMessage() {
-      const smain = await main.userPoints(msg.author.id);
-      if (smain == "P") {
-        msg.author.kick().catch();
-        return;
-      }
-      if (smain === undefined) {
-        // AOK! msg.channel.send(msg.author.id);
-        msg.author.createDM().then(() => {
-          msg.author
-            .send(
-              "Hey there! This server has Sophie installed! Please state your age ('I am 15', for example) to be able to speak in this server. By doing this, you agree to our Privacy Policy. This means we will log your ID, age, and any messages we find suspicious. Most messages will not be logged, and we will always tell you when we log them!"
-            )
-            .catch(() =>
-              msg.reply(
-                "Hey there! This server has Sophie installed! Please state your age ('I am 15', for example) in Sophie's DMs to be able to speak in this server. By doing this, you agree to our Privacy Policy. This means we will log your ID, age, and any messages we find suspicious. Most messages will not be logged, and we will always tell you when we log them!"
+      const smain = main.userPoints(msg.author.id)
+        console.log(smain + " awaited")
+        if (smain == "P") {
+          if(msg.channel.type == "dm") return;
+          msg.author.kick().catch();
+          msg.delete()
+          return;
+        }
+        if (smain === undefined) {
+          // AOK! msg.channel.send(msg.author.id);
+          msg.author.createDM().then(() => {
+            msg.author
+              .send(
+                "Hey there! This server has Sophie installed! Please state your age ('I am 15', for example) to be able to speak in this server. By doing this, you agree to our Privacy Policy. This means we will log your ID, age, and any messages we find suspicious. Most messages will not be logged, and we will always tell you when we log them!"
               )
-            );
-        });
-        return;
-      }
-      if (smain > 10) {
-        // add a setting to change this
-        msg.delete();
-        return;
-        // not kicking because there is time for an appeal
-      }
-      const message = main.msgCheck(msg.content);
-      // intent handling here
-    }
-    onMessage();
-  });
+              .catch(() =>
+                msg.reply(
+                  "Hey there! This server has Sophie installed! Please state your age ('I am 15', for example) in Sophie's DMs to be able to speak in this server. By doing this, you agree to our Privacy Policy. This means we will log your ID, age, and any messages we find suspicious. Most messages will not be logged, and we will always tell you when we log them!"
+                )
+              );
+          });
+          if(msg.channel.type == "dm") return;
+          msg.delete().catch()
+          return;
+        }
+        if (smain > 10) {
+          // add a setting to change this
+          msg.delete().catch()
+          return;
+          // not kicking because there is time for an appeal
+        }
+        const message = main.msgCheck(msg.content);
+        // intent handling here
+        console.log(message)
+    });
+
   bot.login(DiscordToken);
 }
 // start the INIT sequence

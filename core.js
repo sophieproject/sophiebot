@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { callbackify } = require("util");
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./data/sophie.db");
 const main = require("./core.js");
@@ -80,21 +81,22 @@ exports.log = function(content) {
   console.log(content);
 };
 
-exports.userPoints = function(username) {
+exports.userPoints = function(username, callback) {
   db.get(
     "SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?",
     [username],
    function(err, result) {
-      // result: {"Points": 0 , "Pedophile": 0, "Suspicious": 0}
+      // expected result: {"Points": 0, "Pedophile": 0, "Suspicious": 0}
       if (err) {
         main.log(err);
         return err;
       }
       console.log(result);
-      if (result === undefined) return "404";
-      if ((result[0].Pedophile = "1")) return "P";
-      if ((result[0].Suspicious = "1")) return "S" + result[0].Points;
-      return result[0].Points;
+      if (result === undefined) return("404");
+      console.log(result.Pedophile)
+      if (result.Pedophile == 1) return("P");
+      if (result.Suspicious == 1) return("S" + result[0].Points);
+      return (result[0].Points)
     }
   );
 };
