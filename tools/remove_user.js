@@ -5,7 +5,7 @@ const db = new sqlite3.Database("./data/sophie.db");
 const main = require("../core.js");
 
 function remove_user(username) {
-  db.run("SELECT * FROM users WHERE Username = ?", [username], function(
+  db.get("SELECT * FROM users WHERE Username = ?", [username], function(
     err,
     result
   ) {
@@ -14,7 +14,7 @@ function remove_user(username) {
       `-------------------------------------------------------------------------------------`
     );
     main.log(
-      `Username: ${result[0].Username} | Points: ${result[0].Points} | Pedophile? ${result[0].Pedophile} | Suspicious? ${result[0].Suspicious}`
+      `Username: ${result.Username} | Points: ${result.Points} | Pedophile? ${result.Pedophile} | Suspicious? ${result.Suspicious}`
     );
     main.log(
       `-------------------------------------------------------------------------------------`

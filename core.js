@@ -82,6 +82,7 @@ exports.log = function(content) {
 };
 
 exports.userPoints = function(username) {
+  return new Promise((resolve, reject) => {
   db.get(
     "SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?",
     [username],
@@ -89,16 +90,18 @@ exports.userPoints = function(username) {
       // expected result: {"Points": 0, "Pedophile": 0, "Suspicious": 0}
       if (err) {
         main.log(err);
-        return err;
+        reject(err);
       }
       console.log(result);
-      if (result === undefined) return("404");
+      if (result === undefined) { resolve("404"); return; }
       console.log(result.Pedophile)
-      if (result.Pedophile == 1) return("P");
-      if (result.Suspicious == 1) return("S" + result[0].Points);
-      return (result[0].Points)
+      if (result.Pedophile == 1) { resolve("P"); return; }
+      if (result.Suspicious == 1) { resolve("S" + result[0].Points); return; }
+      resolve (result[0].Points)
+      return;
     }
   );
+  });
 };
 
 exports.userAge = function(username) {

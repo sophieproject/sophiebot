@@ -17,7 +17,7 @@ function search_user(username) {
       `-------------------------------------------------------------------------------------`
     );
     console.log(
-      `Username: ${result[0].Username} | Points: ${result[0].Points} | Pedophile? ${result[0].Pedophile} | Suspicious? ${result[0].Suspicious}`
+      `Username: ${result.Username} | Points: ${result.Points} | Pedophile? ${result.Pedophile} | Suspicious? ${results.Suspicious}`
     );
     console.log(
       `-------------------------------------------------------------------------------------`

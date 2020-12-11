@@ -13,14 +13,6 @@ async function init() {
   bot.on("ready", () => {
     main.log("Sophie is active on Discord!");
     bot.user.setActivity("the chats.", { type: "WATCHING" });
-    bot.on("guildCreate", guild => {
-      // this is for removing all pedophiles in guild
-      const blacklist = main.allPedophiles();
-      for (let i = 0; i < blacklist.length; i++) {
-        // remove all marked pedophiles
-        guild.members.kick(blacklist[i]).catch();
-      } // this doesn't protect from pedophiles added to the database after the bot joined
-    });
   });
 
   bot.on("guildMemberAdd", member => {
@@ -30,13 +22,14 @@ async function init() {
   }); // this will remove the pedophiles when they join back, making a softban
 
   bot.on("message", msg => {
+    async function onmessage(msg) {
     if (msg.author.bot) return;
-      const smain = main.userPoints(msg.author.id)
-        console.log(smain + " awaited")
+      const smain = await main.userPoints(msg.author.id)
         if (smain == "P") {
           if(msg.channel.type == "dm") return;
-          msg.author.kick().catch();
-          msg.delete()
+
+          msg.member.kick().catch();
+          
           return;
         }
         if (smain === undefined) {
@@ -65,7 +58,10 @@ async function init() {
         const message = main.msgCheck(msg.content);
         // intent handling here
         console.log(message)
+      }
+      onmessage(msg)
     });
+  
 
   bot.login(DiscordToken);
 }
