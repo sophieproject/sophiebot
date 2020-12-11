@@ -8,7 +8,7 @@ function search_user(username) {
     result
   ) {
     if (err) main.log(err);
-    main.log("User being searched!");
+    main.log("User being searched: " + username);
     if (result === undefined) {
       main.log("User not found");
       return;
@@ -17,7 +17,7 @@ function search_user(username) {
       `-------------------------------------------------------------------------------------`
     );
     console.log(
-      `Username: ${result.Username} | Points: ${result.Points} | Pedophile? ${result.Pedophile} | Suspicious? ${results.Suspicious}`
+      `Username: ${result.Username} | Points: ${result.Points} | Pedophile? ${result.Pedophile} | Suspicious? ${result.Suspicious}`
     );
     console.log(
       `-------------------------------------------------------------------------------------`

@@ -27,13 +27,10 @@ async function init() {
       const smain = await main.userPoints(msg.author.id)
         if (smain == "P") {
           if(msg.channel.type == "dm") return;
-
           msg.member.kick().catch();
-          
           return;
         }
         if (smain === undefined) {
-          // AOK! msg.channel.send(msg.author.id);
           msg.author.createDM().then(() => {
             msg.author
               .send(
@@ -55,7 +52,7 @@ async function init() {
           return;
           // not kicking because there is time for an appeal
         }
-        const message = main.msgCheck(msg.content);
+        const message = await main.msgCheck(msg.content);
         // intent handling here
         console.log(message)
       }

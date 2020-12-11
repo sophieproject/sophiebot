@@ -10,7 +10,7 @@ let db = new sqlite3.Database(
       console.log(err.message);
     } else {
       db.run(
-        "CREATE TABLE `users` (`ID` INTEGER PRIMARY KEY AUTOINCREMENT, `Username` LONGTEXT NOT NULL, `Age` INTEGER(3), `Points` INTEGER(3) DEFAULT '0', `Admin` INTEGER(1) DEFAULT '0', `Pedophile` INTEGER(1) DEFAULT '0', `Suspicious` INTEGER(1) DEFAULT '0', `Modified` TIMESTAMP NOT NULL);"
+        "CREATE TABLE `users` (`ID` INTEGER PRIMARY KEY AUTOINCREMENT, `Username` LONGTEXT NOT NULL, `Age` INTEGER(3) DEFAULT '100', `Points` INTEGER(3) DEFAULT '0', `Admin` INTEGER(1) DEFAULT '0', `Pedophile` INTEGER(1) DEFAULT '0', `Suspicious` INTEGER(1) DEFAULT '0', `Modified` TIMESTAMP NOT NULL);"
       );
       db.run(
         "CREATE TABLE `messages` (`ID` INTEGER PRIMARY KEY AUTOINCREMENT, `Message` LONGTEXT NOT NULL, `Sender` INTEGER NOT NULL);"

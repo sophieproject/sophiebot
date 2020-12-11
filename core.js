@@ -5,13 +5,11 @@ const db = new sqlite3.Database("./data/sophie.db");
 const main = require("./core.js");
 require("dotenv").config();
 
-async function msgCheck1(message) {
-  const response = await nlp.process("en", message);
-  return response;
-}
-
-exports.msgCheck = function(message) {
-  return msgCheck1(message);
+exports.msgCheck = async function(message) {
+ const result = await nlp.process("en", message);
+  return new Promise((resolve, reject) => {
+    resolve(result);
+  });
 };
 
 exports.timestamp = function() {

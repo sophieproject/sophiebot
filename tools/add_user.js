@@ -2,7 +2,7 @@ const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./data/sophie.db");
 const main = require("../core.js");
 
-function userUpdate(username, suspicious, pedophile) {
+function userAdd(username, suspicious, pedophile) {
   db.get("SELECT * FROM users WHERE Username = ?", [username], function(
     err,
     result
@@ -33,4 +33,4 @@ main.log("User is being force-added to database!");
 main.log(`---------------------------------------------------------------`);
 main.log(`Username: ${Args[0]} | Suspicious? ${Args[1]} | Pedophile? ${Args[2]}`); //Log admin actions
 main.log(`---------------------------------------------------------------`);
-userUpdate(Args[0], Args[1], Args[2]);
+userAdd(Args[0], Args[1], Args[2]);
