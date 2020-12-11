@@ -38,7 +38,7 @@ async function init() {
         return;
       }
       if (smain === undefined) {
-        msg.channel.send(msg.author.id);
+        // AOK! msg.channel.send(msg.author.id);
         msg.author.createDM().then(() => {
           msg.author
             .send(

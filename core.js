@@ -76,13 +76,14 @@ exports.log = function(content) {
       }
     }
   );
+  console.log(content);
 };
 
-exports.userPoints = async function(username) {
+exports.userPoints = function(username) {
   db.run(
     "SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?",
     [username],
-    function(err, result) {
+   function(err, result) {
       // result: {"Points": 0 , "Pedophile": 0, "Suspicious": 0}
       if (err) {
         main.log(err);
