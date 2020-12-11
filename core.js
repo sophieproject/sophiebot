@@ -12,6 +12,7 @@ async function msgCheck1(message) {
 exports.msgCheck = function(message) {
   return msgCheck1(message);
 };
+
 exports.timestamp = function() {
   const dateOb = new Date();
 
@@ -80,7 +81,7 @@ exports.log = function(content) {
 };
 
 exports.userPoints = function(username) {
-  db.run(
+  db.get(
     "SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?",
     [username],
    function(err, result) {
@@ -99,7 +100,7 @@ exports.userPoints = function(username) {
 };
 
 exports.userAge = function(username) {
-  db.run(
+  db.get(
     "SELECT Age, Timestamp FROM users WHERE Username = ?",
     [username],
     function(err, result) {
@@ -114,7 +115,7 @@ exports.userAge = function(username) {
 };
 
 exports.update = function(username, age, points) {
-  db.run("SELECT * FROM users WHERE Username = ?", [username], function(
+  db.get("SELECT * FROM users WHERE Username = ?", [username], function(
     err,
     result
   ) {
@@ -140,7 +141,7 @@ exports.update = function(username, age, points) {
 
 exports.userBirthday = function(username, age) {
   if (age > 117) return "606";
-  db.run(
+  db.get(
     "SELECT Age, Modified FROM users WHERE Username = ?",
     [username],
     function(err, result) {
@@ -157,7 +158,7 @@ exports.userBirthday = function(username, age) {
 };
 
 exports.allPedophiles = function() {
-  db.run("SELECT Username FROM users WHERE Pedophile = '1'", [], function(
+  db.get("SELECT Username FROM users WHERE Pedophile = '1'", [], function(
     err,
     result
   ) {
