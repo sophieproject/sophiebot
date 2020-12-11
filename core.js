@@ -81,11 +81,11 @@ exports.log = function(content) {
   console.log(content);
 };
 
-exports.userPoints = function(username, callback) {
+exports.userPoints = function(username) {
   db.get(
     "SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?",
     [username],
-   function(err, result) {
+   async function(err, result) {
       // expected result: {"Points": 0, "Pedophile": 0, "Suspicious": 0}
       if (err) {
         main.log(err);
