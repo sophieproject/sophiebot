@@ -76,7 +76,6 @@ exports.log = function(content) {
       }
     }
   );
-  console.log(content);
 };
 
 exports.userPoints = async function(username) {

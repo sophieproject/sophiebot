@@ -33,12 +33,12 @@ async function init() {
     if (msg.author.bot) return;
     async function onMessage() {
       const smain = await main.userPoints(msg.author.id);
-      console.log(smain);
       if (smain == "P") {
         msg.author.kick().catch();
         return;
       }
       if (smain === undefined) {
+        msg.channel.send(msg.author.id);
         msg.author.createDM().then(() => {
           msg.author
             .send(
