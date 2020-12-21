@@ -3,7 +3,7 @@ const main = require("../core.js"); // require SQLite functions, logging, etc
 require("dotenv").config();
 const Discord = require("discord.js");
 
-async function init() {
+exports.init = async function init(nlp) {
   main.log("Starting Discord bot initiation sequence.");
   main.log("Loading configuration (3/3)");
   const DiscordToken = process.env.DiscordToken;
@@ -25,25 +25,10 @@ async function init() {
     async function onmessage(msg) {
     if (msg.author.bot) return;
       const smain = await main.userPoints(msg.author.id)
+      console.log("User Points: " + smain)
         if (smain == "P") {
           if(msg.channel.type == "dm") return;
           msg.member.kick().catch();
-          return;
-        }
-        if (smain === undefined) {
-          msg.author.createDM().then(() => {
-            msg.author
-              .send(
-                "Hey there! This server has Sophie installed! Please state your age ('I am 15', for example) to be able to speak in this server. By doing this, you agree to our Privacy Policy. This means we will log your ID, age, and any messages we find suspicious. Most messages will not be logged, and we will always tell you when we log them!"
-              )
-              .catch(() =>
-                msg.reply(
-                  "Hey there! This server has Sophie installed! Please state your age ('I am 15', for example) in Sophie's DMs to be able to speak in this server. By doing this, you agree to our Privacy Policy. This means we will log your ID, age, and any messages we find suspicious. Most messages will not be logged, and we will always tell you when we log them!"
-                )
-              );
-          });
-          if(msg.channel.type == "dm") return;
-          msg.delete().catch()
           return;
         }
         if (smain > 10) {
@@ -52,16 +37,14 @@ async function init() {
           return;
           // not kicking because there is time for an appeal
         }
-        const message = await main.msgCheck(msg.content);
+        const message = await main.msgCheck(msg.content, nlp);
         // intent handling here
-        console.log(message)
+        main.addStrike(msg.author.id, message.intent, message.score)
       }
       onmessage(msg)
     });
   
 
-  bot.login(DiscordToken);
+    bot.login(DiscordToken);
 }
 // start the INIT sequence
-
-module.exports = init();

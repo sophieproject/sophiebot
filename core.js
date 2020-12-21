@@ -1,13 +1,13 @@
 const fs = require("fs");
-const { callbackify } = require("util");
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./data/sophie.db");
 const main = require("./core.js");
+const crypto = require('crypto'); 
 require("dotenv").config();
 
-exports.msgCheck = async function(message) {
- const result = await nlp.process("en", message);
-  return new Promise((resolve, reject) => {
+exports.msgCheck = async function(message, nlp) {
+  const result = await nlp.process("en", message);
+  return new Promise((resolve) => {
     resolve(result);
   });
 };
@@ -79,97 +79,115 @@ exports.log = function(content) {
   console.log(content);
 };
 
-exports.userPoints = function(username) {
+const hashUsername = async function(username) {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash('sha512', username).digest('hex'); 
+    resolve(hash);
+  });
+  }
+
+exports.userPoints = async function(username) {
   return new Promise((resolve, reject) => {
   db.get(
     "SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?",
-    [username],
+    [hashUsername(username)],
    async function(err, result) {
       // expected result: {"Points": 0, "Pedophile": 0, "Suspicious": 0}
       if (err) {
         main.log(err);
         reject(err);
       }
-      console.log(result);
-      if (result === undefined) { resolve("404"); return; }
-      console.log(result.Pedophile)
+      if (result === undefined) { resolve(0); return; }
       if (result.Pedophile == 1) { resolve("P"); return; }
-      if (result.Suspicious == 1) { resolve("S" + result[0].Points); return; }
-      resolve (result[0].Points)
-      return;
+      if (result.Suspicious == 1) { resolve("S" + result.Points); return; }
+      resolve (result.Points)
     }
   );
   });
 };
 
 exports.userAge = function(username) {
+  return new Promise((resolve, reject) => {
   db.get(
-    "SELECT Age, Timestamp FROM users WHERE Username = ?",
-    [username],
-    function(err, result) {
+    "SELECT Age, Modified FROM users WHERE Username = ?",
+    [hashUsername(username)],
+    async function(err, result) {
       if (err) {
         main.log(err);
-        return err;
+        reject(err);
       }
-      if (result === undefined) return "404";
-      return result[0].Age;
+      if (result === undefined) resolve("404");
+      resolve(result.Age);
     }
   );
+  });
 };
 
-exports.update = function(username, age, points) {
-  db.get("SELECT * FROM users WHERE Username = ?", [username], function(
+exports.addStrike = async function(username, severity, score, message) {
+  return new Promise((resolve, reject) => {
+    db.get(
+      "SELECT Age FROM users WHERE Username = ?",
+      [hashUsername(username)], async function(err, result) {
+        if (err) {
+          main.log(err);
+          reject(err);
+        }
+        if (result === undefined) {
+          points = severity * score
+          AgeValue = undefined
+        } else {
+          if (result.Age > 17 || result.Age === undefined) { const age = 0} else { const age = 1}
+          points = severity - result.Age - result.Verified * score
+          AgeValue = result.Age
+        }
+        main.update(username, AgeValue, points)
+        db.run("INSERT INTO messages (Message, Sender) VALUES('?', '?')", message, username)
+        main.log(`User ${username} had an automated strike placed against them. Run sophie logs to review the strike.`)
+      });
+  });
+}
+
+exports.update = async function(username, age, points) {
+  console.log("User is being updated")
+  const hashedUsername = await hashUsername(username)
+  return new Promise((resolve, reject) => {
+  db.get(`SELECT 'Username' FROM users WHERE Username = '${hashedUsername}'`, async function(
     err,
     result
   ) {
     if (err) main.log(err);
     if (result === undefined) {
-      const UserID = result[0].ID;
+      console.log("User did not exist, creating...")
       db.run(
-        `INSERT INTO users (ID, Age, Points, Modified) VALUES('${UserID}', '${age}', '${points}', ${main.date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${main.date()}'`,
+        `INSERT INTO users (Username, Age, Points, Modified) VALUES('${hashedUsername}', '${age}', '${points}', '${main.date()}')`,
         function(err) {
           if (err) main.log(err);
-        }
+        } // usernames are hashed to protect privacy when privacy is due
       );
     } else {
-      db.run(
-        `INSERT INTO users (Username, Age, Points, Modified) VALUES('${username}', '${age}', '${points}', ${main.date()}) ON DUPLICATE KEY UPDATE Age = '${age}', Points = '${points}', Modified = '${main.date()}'`,
-        function(err) {
-          if (err) main.log(err);
-        } // hash the Username later, and anticipate hashed usernames
-      );
+      console.log("User exists, finding user")
+      db.run(`UPDATE users SET Age = '${age}', Points = '${points}' , Modified = '${main.date()}' WHERE Username = '${result.Username}'`)
     }
   });
+});
 };
 
 exports.userBirthday = function(username, age) {
   if (age > 117) return "606";
+  return new Promise((resolve, reject) => {
   db.get(
     "SELECT Age, Modified FROM users WHERE Username = ?",
-    [username],
-    function(err, result) {
+    [hashUsername(username)],
+    async function(err, result) {
       if (err) {
         main.log(err);
-        return err;
+        reject(err);
       }
-      const currentAge = main.userAge(username);
-      if (age > currentAge + 1) return "606";
-      if ((result[0].Modified = main.date())) return "606";
-      main.update(username, age);
+      const currentAge = main.userAge(hashUsername(username));
+      if (age > currentAge + 1) resolve("606");
+      if ((result.Modified = main.date())) resolve("606");
+      main.update(hashUsername(username), age);
     }
   );
-};
-
-exports.allPedophiles = function() {
-  db.get("SELECT Username FROM users WHERE Pedophile = '1'", [], function(
-    err,
-    result
-  ) {
-    if (err) main.log(err);
-    const blacklist = [];
-    for (let i = 0; i < result.length; i++) {
-      blacklist.push(result[i].ID);
-    }
-    return blacklist;
   });
 };
