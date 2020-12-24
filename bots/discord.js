@@ -19,7 +19,7 @@ exports.init = async function init(nlp) {
 				description: warning,
 				timestamp: new Date(),
 				footer: {
-					text: "This bot is not 100% accurate and results may be flawed or incorrect."
+					text: "If you believe this to be a mistake, contact us at support@sophiefoundation.org"
 				}
 			}
 		});
@@ -27,7 +27,6 @@ exports.init = async function init(nlp) {
 
 	function query(msg, query, author) {
 		return new Promise((resolve) => {
-			console.log(query);
 			msg.author.send({
 				embed: {
 					color: "7289da",
@@ -54,13 +53,11 @@ exports.init = async function init(nlp) {
 				}).then(collected => {
 					const reaction = collected.first();
 					if (reaction.emoji.name === "👍") {
-						console.log("true");
 						resolve("true")
-						return;
+						return("true")
 					} else {
-						console.log("false");
 						resolve("false")
-						return;
+						return("false")
 					}
 				}).catch();
 			});
@@ -93,19 +90,22 @@ exports.init = async function init(nlp) {
 			// not kicking because there is time for an appeal
 		}
 		const message = await main.msgCheck(msg.content, nlp);
-		console.log(message.intent);
 		if (message.intent == "None") return;
 		if (message.intent == "AGE") {
-			match = msg.content.match(/(\d+)/); // this system is temp but nlpjs has broken entity extraction
-			var queryr = await query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author);
-			console.log(queryr);
+      match = msg.content.match(/(\d+)/); // this system is temp but nlpjs has broken entity extraction
+      const currentAge = await main.userAge(main.hashUsername(msg.author.id));
+      if (match == currentAge) return;
+      var queryr = await query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author);
+      console.log(queryr)
 			if (queryr == "true") {
-				if ((await main.userBirthday(msg.author.id, match[0])) == "606") {
+        console.log("Query returned")
+        console.log(await main.userBirthday(msg.author.id, match[0]))
+        if (await main.userBirthday(msg.author.id, match[0]) == 606) {
 					warning(msg, "This user is claiming to be inconsistent ages. Proceed with caution.");
 				}
 			}
 		} else {
-			main.addStrike(msg.author.id, message.intent, message.score);
+			main.addStrike(msg.author.id, message.intent, message.score, msg.content);
 			if (message.intent > 1) {
 				warning(msg, "This user has a strike investigation pending. Proceed with caution.");
 			}
