@@ -52,13 +52,14 @@ exports.log = function(content) {
 };
 exports.hashUsername = async function(username) {
 	return new Promise((resolve, reject) => {
-		hash = crypto.createHash("sha256", username).digest("hex");
+		hash = crypto.createHash("sha512", username).digest("hex");
 		resolve(hash);
 	});
 };
 exports.userPoints = async function(username) {
+	hashedUsername = await main.hashUsername(username)
 	return new Promise((resolve, reject) => {
-		db.get("SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?", [main.hashUsername(username)], async function(err, result) {
+		db.get("SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?", [hashedUsername], async function(err, result) {
 			// expected result: {"Points": 0, "Pedophile": 0, "Suspicious": 0}
 			if (err) {
 				main.log(err);
@@ -81,20 +82,20 @@ exports.userPoints = async function(username) {
 	});
 };
 exports.userAge = async function(username) {
-  const hashedUsername = await main.hashUsername(username)
+	hashedUsername = await main.hashUsername(username)
 	return new Promise((resolve, reject) => {
 		db.get("SELECT Age FROM users WHERE Username = ?", [hashedUsername], async function(err, result) {
 			if (err) {
 				main.log(err);
 				reject(err);
-      }
-			if (result === undefined) {
+			}
+			if (result === undefined || result.Age == "undefined") {
 				resolve("404");
 				return;
 			} else {
-			resolve(result.Age);
-      return;
-      }
+				resolve(result.Age);
+				return;
+			}
 		});
 	});
 };
@@ -114,60 +115,66 @@ exports.addStrike = async function(username, severity, score, message) {
 					age = 1;
 				}
 				points = severity - age - result.Verified * score;
-      }
-      if (points > 0.5) {
-      if (result === undefined) {
-        AgeValue = 404
-      } else {
-        AgeValue = result.Age
-      }
-			main.update(username, AgeValue, points);
-      db.run(`INSERT INTO messages (Message, Sender, Points) VALUES(?, '${username}', '${points}');`, message)
-      }
+			}
+			if (points > 0.5) {
+				if (result === undefined) {
+					AgeValue = 404
+				} else {
+					AgeValue = result.Age
+				}
+				main.update(username, AgeValue, points);
+				db.run(`INSERT INTO messages (Message, Sender, Points) VALUES(?, '${username}', '${score}');`, message)
+			}
 		});
 	});
 };
 exports.update = async function(username, age, points) {
-	const hashedUsername = await main.hashUsername(username);
-		db.get(`SELECT Username, Points FROM users WHERE Username = '${hashedUsername}'`, async function(err, result) { // remove as userPoints does this
-			if (err) main.log(err); // Error with SQLite statement Range (Fixed)
-			if (result === undefined) {
-				db.run(`INSERT INTO users (Username, Age, Points, Modified) VALUES('${hashedUsername}', '${age}', '${points}', '${main.date()}')`, function(err) {
-						if (err) main.log(err);
-					} // usernames are hashed to protect privacy when privacy is due
-				);
-			} else {
-				db.run(`UPDATE users SET Age = '${age}', Points = '${result.Points +
-              points}' , Modified = '${main.date()}' WHERE Username = '${
+	if (points === undefined) {
+		points = 0
+	} else {
+		pointvalue = points
+	}
+	hashedUsername = await main.hashUsername(username);
+	db.get(`SELECT Username, Points FROM users WHERE Username = '${hashedUsername}'`, async function(err, result) { // remove as userPoints does this
+		if (err) main.log(err); // Error with SQLite statement Range (Fixed)
+		if (result === undefined) {
+			db.run(`INSERT INTO users (Username, Age, Points, Modified) VALUES('${hashedUsername}', '${age}', '${points}', '${main.date()}')`, function(err) {
+					if (err) main.log(err);
+				} // usernames are hashed to protect privacy when privacy is due
+			);
+		} else {
+			db.run(`UPDATE users SET Age = '${age}', Points = '${result.Points +
+              pointvalue}' , Modified = '${main.date()}' WHERE Username = '${
               result.Username
             }'`);
-			}
+		}
 	});
 };
 exports.userBirthday = async function(username, age1) {
-  return new Promise(async (resolve, reject) => {
-  if (age1 > 117) resolve(606);
-  const hashedUsername = await main.hashUsername(username);
-  const currentAge = await main.userAge(username)
-  db.get(`SELECT Points, Modified FROM users WHERE Username = '${hashedUsername}'`, async function(err, result) {
-		if (currentAge == 404) {
-      main.update(username, age1, 0);
-      return;
-    } else if (age1 > (currentAge + 1) || age1 < currentAge) {
-      resolve(606);
-      return;
-		} else
-		if ((result.Modified = main.date())) {
-      resolve(606);
-      return;
-    } else {
-    if (result === undefined) {
-      Points = 0
-    } else {
-      Points = result.Points
-    }
-    main.update(username, age1, Points);
-    }
-  });
-});
+	return new Promise(async (resolve, reject) => {
+		if (age1 > 117) resolve(606);
+		hashedUsername = await main.hashUsername(username);
+		currentAge = await main.userAge(username)
+		db.get(`SELECT Points, Modified FROM users WHERE Username = '${hashedUsername}'`, async function(err, result) {
+			if (currentAge == age1) return;
+			if (currentAge == 404) {
+				main.update(username, age1, 404);
+				return;
+			} else if (age1 > (currentAge + 1) || age1 < currentAge) {
+				resolve(606);
+				return;
+			} else
+			if ((result.Modified = main.date())) {
+				resolve(606);
+				return;
+			} else {
+				if (result === undefined) {
+					PointsValue = 404
+				} else {
+					PointsValue = result.Points
+				}
+				main.update(username, age1, PointsValue);
+			}
+		});
+	});
 }

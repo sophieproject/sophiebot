@@ -9,7 +9,7 @@ exports.init = async function init(nlp) {
 	const bot = new Discord.Client();
 
 	function warning(msg, warning) {
-    if (!message.guild.me.hasPermission("SEND_MESSAGES")) return;
+		if (!msg.guild.me.hasPermission("SEND_MESSAGES")) return;
 		msg.channel.send({
 			embed: {
 				color: "e74c3c",
@@ -55,21 +55,18 @@ exports.init = async function init(nlp) {
 					const reaction = collected.first();
 					if (reaction.emoji.name === "👍") {
 						resolve("true")
-						return("true")
+						return ("true")
 					} else {
 						resolve("false")
-						return("false")
+						return ("false")
 					}
-        }).catch();
-      });
+				}).catch();
+			});
 		});
 	}
 	main.log("Configuration loaded! (3/3)");
 	bot.on("ready", () => {
 		main.log("Sophie is active on Discord!");
-		bot.user.setActivity(`${(bot.guilds.fetch, bot.guilds.cache.size)} servers`, {
-			type: "WATCHING"
-		});
 	});
 	bot.on("guildMemberAdd", member => {
 		if (main.userPoints(member.id) == "P") {
@@ -77,6 +74,9 @@ exports.init = async function init(nlp) {
 		}
 	}); // this will remove the pedophiles when they join back, making a softban
 	bot.on("message", async msg => {
+		bot.user.setActivity(`${(bot.guilds.fetch, bot.guilds.cache.size)} servers`, {
+			type: "WATCHING"
+		});
 		if (msg.author.bot) return;
 		const smain = await main.userPoints(msg.author.id);
 		if (smain == "P") {
@@ -91,25 +91,25 @@ exports.init = async function init(nlp) {
 			// not kicking because there is time for an appeal
 		}
 		const message = await main.msgCheck(msg.content, nlp);
-    if (message.intent == "None") return;
-    match = msg.content.match(/(\d+)/); // this system is temp but nlpjs has broken entity extraction
+		if (message.intent == "None") return;
+		match = msg.content.match(/(\d+)/); // this system is temp but nlpjs has broken entity extraction
 		if (message.intent == "AGE" && match !== null) {
-      const currentAge = await main.userAge(main.hashUsername(msg.author.id));
-      if (match == currentAge) return;
-      var queryr = await query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
+			const currentAge = await main.userAge(main.hashUsername(msg.author.id));
+			if (match == currentAge) return;
+			var queryr = await query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
 			if (queryr == "true") {
-        if (await main.userBirthday(msg.author.id, match[0]) == 606) {
+				if (await main.userBirthday(msg.author.id, match[0]) == 606) {
 					warning(msg, "This user is claiming to be inconsistent ages. Proceed with caution.")
 				}
 			}
 		} else {
-      if (message.intent >= 1) {
-			main.addStrike(msg.author.id, message.intent, message.score, msg.content);
-			if (message.intent > 1) {
-				warning(msg, "This user has a strike investigation pending. Proceed with caution.")
+			if (message.intent >= 1 && message.score >= 0.5) {
+				main.addStrike(msg.author.id, message.intent, message.score, msg.content);
+				if (message.intent > 1) {
+					warning(msg, "This user has a strike investigation pending. Proceed with caution.")
+				}
 			}
-    }
-  }
+		}
 	});
 	bot.login(DiscordToken);
 };
