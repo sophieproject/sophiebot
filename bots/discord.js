@@ -9,6 +9,7 @@ exports.init = async function init(nlp) {
 	const bot = new Discord.Client();
 
 	function warning(msg, warning) {
+    if (!message.guild.me.hasPermission("SEND_MESSAGES")) return;
 		msg.channel.send({
 			embed: {
 				color: "e74c3c",
@@ -22,7 +23,7 @@ exports.init = async function init(nlp) {
 					text: "If you believe this to be a mistake, contact us at support@sophiefoundation.org"
 				}
 			}
-		});
+		})
 	}
 
 	function query(msg, query, author) {
@@ -59,8 +60,8 @@ exports.init = async function init(nlp) {
 						resolve("false")
 						return("false")
 					}
-				}).catch();
-			});
+        }).catch();
+      });
 		});
 	}
 	main.log("Configuration loaded! (3/3)");
@@ -90,26 +91,25 @@ exports.init = async function init(nlp) {
 			// not kicking because there is time for an appeal
 		}
 		const message = await main.msgCheck(msg.content, nlp);
-		if (message.intent == "None") return;
-		if (message.intent == "AGE") {
-      match = msg.content.match(/(\d+)/); // this system is temp but nlpjs has broken entity extraction
+    if (message.intent == "None") return;
+    match = msg.content.match(/(\d+)/); // this system is temp but nlpjs has broken entity extraction
+		if (message.intent == "AGE" && match !== null) {
       const currentAge = await main.userAge(main.hashUsername(msg.author.id));
       if (match == currentAge) return;
-      var queryr = await query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author);
-      console.log(queryr)
+      var queryr = await query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
 			if (queryr == "true") {
-        console.log("Query returned")
-        console.log(await main.userBirthday(msg.author.id, match[0]))
         if (await main.userBirthday(msg.author.id, match[0]) == 606) {
-					warning(msg, "This user is claiming to be inconsistent ages. Proceed with caution.");
+					warning(msg, "This user is claiming to be inconsistent ages. Proceed with caution.")
 				}
 			}
 		} else {
+      if (message.intent >= 1) {
 			main.addStrike(msg.author.id, message.intent, message.score, msg.content);
 			if (message.intent > 1) {
-				warning(msg, "This user has a strike investigation pending. Proceed with caution.");
+				warning(msg, "This user has a strike investigation pending. Proceed with caution.")
 			}
-		}
+    }
+  }
 	});
 	bot.login(DiscordToken);
 };

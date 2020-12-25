@@ -107,19 +107,23 @@ exports.addStrike = async function(username, severity, score, message) {
 			}
 			if (result === undefined) {
 				points = severity * score;
-				AgeValue = undefined;
 			} else {
 				if (result.Age > 17 || result.Age === undefined) {
-					const age = 0;
+					age = 0;
 				} else {
-					const age = 1;
+					age = 1;
 				}
-				points = severity - result.Age - result.Verified * score;
-				AgeValue = result.Age;
-			}
+				points = severity - age - result.Verified * score;
+      }
+      if (points > 0.5) {
+      if (result === undefined) {
+        AgeValue = 404
+      } else {
+        AgeValue = result.Age
+      }
 			main.update(username, AgeValue, points);
-			db.run(`INSERT INTO messages (Message, Sender, Points) VALUES(?, '${username}', '${points}');`, message)
-			main.log(`User ${username} had an automated strike placed against them. Run sophie logs to review the strike.`);
+      db.run(`INSERT INTO messages (Message, Sender, Points) VALUES(?, '${username}', '${points}');`, message)
+      }
 		});
 	});
 };
@@ -141,22 +145,28 @@ exports.update = async function(username, age, points) {
 	});
 };
 exports.userBirthday = async function(username, age1) {
-  return new Promise((resolve, reject) => async function() {
+  return new Promise(async (resolve, reject) => {
   if (age1 > 117) resolve(606);
   const hashedUsername = await main.hashUsername(username);
+  const currentAge = await main.userAge(username)
   db.get(`SELECT Points, Modified FROM users WHERE Username = '${hashedUsername}'`, async function(err, result) {
 		if (currentAge == 404) {
       main.update(username, age1, 0);
       return;
     } else if (age1 > (currentAge + 1) || age1 < currentAge) {
       resolve(606);
-      return(606);
+      return;
 		} else
 		if ((result.Modified = main.date())) {
       resolve(606);
-      return(606);
+      return;
     } else {
-    main.update(username, age1, result.Points);
+    if (result === undefined) {
+      Points = 0
+    } else {
+      Points = result.Points
+    }
+    main.update(username, age1, Points);
     }
   });
 });
