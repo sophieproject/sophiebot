@@ -96,8 +96,8 @@ exports.init = async function init(nlp) {
 		if (message.intent == "AGE" && match !== null) {
 			const currentAge = await main.userAge(main.hashUsername(msg.author.id));
 			if (match == currentAge) return;
-			var queryr = await query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
-			if (queryr == "true") {
+			var queryResult = await query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
+			if (queryResult == "true") {
 				if (await main.userBirthday(msg.author.id, match[0]) == 606) {
 					warning(msg, "This user is claiming to be inconsistent ages. Proceed with caution.")
 				}

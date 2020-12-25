@@ -84,7 +84,7 @@ exports.userPoints = async function(username) {
 exports.userAge = async function(username) {
 	hashedUsername = await main.hashUsername(username)
 	return new Promise((resolve, reject) => {
-		db.get("SELECT Age FROM users WHERE Username = ?", [hashedUsername], async function(err, result) {
+		db.get(`SELECT Age FROM users WHERE Username = ${hashedUsername}`, async function(err, result) {
 			if (err) {
 				main.log(err);
 				reject(err);
@@ -100,8 +100,9 @@ exports.userAge = async function(username) {
 	});
 };
 exports.addStrike = async function(username, severity, score, message) {
+	hashedUsername = await main.hashUsername(username)
 	return new Promise((resolve, reject) => {
-		db.get("SELECT Age FROM users WHERE Username = ?", [main.hashUsername(username)], async function(err, result) {
+		db.get(`SELECT Age FROM users WHERE Username = ${hashedUsername}`, async function(err, result) {
 			if (err) {
 				main.log(err);
 				reject(err);
@@ -118,11 +119,11 @@ exports.addStrike = async function(username, severity, score, message) {
 			}
 			if (points > 0.5) {
 				if (result === undefined) {
-					AgeValue = 404
+					newAgeValue = 404
 				} else {
-					AgeValue = result.Age
+					newAgeValue = result.Age
 				}
-				main.update(username, AgeValue, points);
+				main.update(username, newAgeValue, points);
 				db.run(`INSERT INTO messages (Message, Sender, Points) VALUES(?, '${username}', '${score}');`, message)
 			}
 		});
@@ -150,17 +151,17 @@ exports.update = async function(username, age, points) {
 		}
 	});
 };
-exports.userBirthday = async function(username, age1) {
+exports.userBirthday = async function(username, requestedAge) {
 	return new Promise(async (resolve, reject) => {
-		if (age1 > 117) resolve(606);
+		if (requestedAge > 117) resolve(606);
 		hashedUsername = await main.hashUsername(username);
 		currentAge = await main.userAge(username)
 		db.get(`SELECT Points, Modified FROM users WHERE Username = '${hashedUsername}'`, async function(err, result) {
-			if (currentAge == age1) return;
+			if (currentAge == requestedAge) return;
 			if (currentAge == 404) {
-				main.update(username, age1, 404);
+				main.update(username, requestedAge, 404);
 				return;
-			} else if (age1 > (currentAge + 1) || age1 < currentAge) {
+			} else if (requestedAge > (currentAge + 1) || requestedAge < currentAge) {
 				resolve(606);
 				return;
 			} else
@@ -169,11 +170,11 @@ exports.userBirthday = async function(username, age1) {
 				return;
 			} else {
 				if (result === undefined) {
-					PointsValue = 404
+					newPointsValue = 404
 				} else {
-					PointsValue = result.Points
+					newPointsValue = result.Points
 				}
-				main.update(username, age1, PointsValue);
+				main.update(username, requestedAge, newPointsValue);
 			}
 		});
 	});
