@@ -1,0 +1,229 @@
+version: "2.0"
+nlu:
+
+- intent: '0'
+  examples: |
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - don't send nudes
+    - and when they send a nude, bam
+    - nudes are banned
+    - don't send porn
+    - 12/18/2005
+    - Hey
+    - How are you doing
+    - Pedophiles suck
+    - nothing notable that needs to be done with the bot
+    - do you need help with the ai?
+    - API is fully fixed and operational, AI is operation, just need command handler, AI patch, and Admin
+    - To avoid intent confusion, group these training examples into single migration intent and make the response depend on the value of a categorical product slot that comes from an entity.
+    - so do you need help with the ai?
+    - okay
+    - Server promoting and spamming that
+    - So you know how my sisters bf is abusive?
+    - I only have like 3 friends and i only have 1 class per person ish
+    - I dont wanna go to school tomorroe
+    - NTM they don't even provide suffice information when they do clog up chat
+    - Tried to download an application and I had to do fix broken install Yada yada
+    - My friend taught me one sentence in German lol
+    - they seem focused on him
+    - trust your partner to not cheat and they won't
+    - An Internet pedophile ring with up to 70,000 members — thought to be the world's largest —has been uncovered by police, a security official said Wednesday.
+    - It said that so far 184 people had been arrested and investigations in some countries were continuing. Most of those detained are suspected of direct involvement in sexually abusing children.
+    - they had the OG Apple I
+    - motherboard
+    - in almost pristine condition
+    - for half a million dollars
+    - and they passed
+    - The way he goes in depth about the feeling of a little girl makes me extremely uncomfortable
+    - Since they got a potato to run Linux
+    - I compiled Chromium OS and ran Among Us on my laptop via Chromium OS
+    - Oh shit look another one
+    - oh fuck you
+    - I fucking hate you
+    - fuck you
+    - My brother's name is Rohit he tells everyone taht his name is rohan to sound a bit high standard i still don't get it it juat doesn't make sense
+    - exit
+    - test
+    - Pm me if u want
+    - anyone hmu
+    - girls that like baseball players pm me
+    - what
+    - well good
+    - damn
+    - you go to horny jail
+    - w u t
+    - ykw I'm not even bad
+    - I see your picture every day and it hurttss
+    - you settle for second, when I put you firssttt
+    - I can't agree with that
+    - I wonder what it's like
+    - she doesn't do images
+    - SHUT UP
+    - data is scrubbed
+    - what do you like to do
+    - I like tacos do you
+    - this is effective
+    - MY DAD IS A PRICK
+    - Café
+    - I like the park. do you
+    - (╯°□°）╯︵ ┻━┻
+    - gay
+
+- intent: '1'
+  examples: |
+    - how old are you
+    - mines longer
+    - DADDY
+    - you're so cute
+    - I like the movies. its dark there
+    - I love you
+    - You are so cute
+    - so sexy
+    - I think you're attractive
+    - I'd love to kiss you
+    - *kisses you*
+    - I like you
+    - Can we date?
+    - Should we go out?
+    - are you single?
+    - u gay?
+    - are you gay?
+    - are you lesbian
+    - are you pansexual
+    - are you bisexual
+    - u bi?
+    - u pansexual?
+    - have you ever flirted?
+    - what school do you go to?
+    - I wish you were next to me
+    - cuddles up next to you
+    - kinky
+    - I don't want to lead you on
+    - I WANT E-BOYS 🇮🇳 life if boring hereee
+    - cmon babe
+    - babe
+    - you are one of a kind, I just wanna make you miinnee
+    - I want to make you mine
+    - s-senpai
+    - it can be our seceret
+    - tdont worry sweetheart i will be
+    - do you have a cell phone we can chat on
+    - How many neighbors do you have
+    - are you as pretty as your mom
+    - what do your parents work nights
+    
+- intent: '2'
+  examples: |
+    - FUCK MEEEEE
+    - How many police patroll your neighborhood
+    - wanna see?
+    - i like my girls aroud 13
+    - are your parents home
+    - IMMA F U C K YOUR F U C K I N G BRAINS OUT YOU MINOR
+    - i wanna fuck a 12 y/o
+    - try anal
+    - put a few fingers in your ass
+    - put a few fingers in your vagina
+    - do you want a rimjob
+    - give me a rimjob
+    - I last a long time
+    - any turn-ons
+    - any kinks
+    - looking for some fun
+    - looking for some gay fun
+    - are you horny?
+    - if you were older I'd ask for nudes
+    - I'd ask for nudes if you were older
+    - we should get married
+    - yeah I fucked it so hard it doesn't exist anymore
+    - Any girls wanna rp pm me
+    - i wanna put my cock in a 12 y/o tight young pussy
+    - me need sex
+    - do you drink beer
+    - do you smoke weed
+    - get naked kid
+    - what's your favorite sex position
+    - cum inside you
+    - i want to put my cream in you
+    - imma fuck the ever living fuck out of you sweatheart
+    - ik your young but its okay to do it and show me just aslong as it stays as our speacial little secrect
+    - okay I'll show you my budes but please dont tell my dad
+    - i can be your daddy :wink:
+    - do really want to fuck me
+    - okay ill show you my pussy
+    - sniffs your cunt
+    - Fúçk mé
+    - Jake can you rúb my çóçk
+    -  çõçk
+    - have you ever done oral?
+    
+- intent: '3'
+  examples: |
+    - Jake meet me in the bathroom at school tomorrow I got a long surprise for you
+    - Jake I bet I can make you cum $20 says I can
+    - what time can we hook up
+    - DADDY FUCK ME
+    - Girls that would like their butt and feet rubbed after a lonf day HMU
+    - fuck me
+    - I have a mustang. do you want to go for a ride in my car
+    - i wanna fuck you until your legs are shaking your breathin hard theres a pool of sweat on the floor and your pussy is dripping with both of our cum
+    - love to fuck that ass <3
+    - im your daddy child
+    - I wish I could fuck you
+    - its where i put my cock inside your vagina
+    - yes daddy please more
+    - fuck me daddy
+    - what about revers cow girl
+
+- intent: '4'
+  examples: |
+    - i wanna put my cock so deep in your ass it comes out of your mouth then i wanna keep fucking you until i cum and fill your entire guts with my hot warm sticky cum
+    - i wanna fuck a kid a 14 y/o even tho im 40
+    - hey my little girl :wink: can you send daddy a picture of your tits? ik your young and they havent devolped yet but i wanna see them
+    - i slip my cock into you as i pin you down and start roughly fucking you while my other hand slowly moves down to your pussy and i start to slowly rub your clit
+
+
+- intent: '5'
+  examples: |
+    - hey i would like to lick you 11 year old titties
+    - here i can send you some pics and teach you how to mastrubate then you can show me you doing it
+    - hey billy i know your a minor and im 40 but i wanna fuck your brains out
+    - im 40 im not fucking anyone older then 15
+    - i wanna put my cock in a 14 y/o with my big 40 y/o fat cock
+    - send nudes
+    - send me pics
+    - show me your penis
+    - im 40 your 12 if you take those and subtract them then its 32 so togther wed be 32 and i would just love to be with you in all ways dating and inside you
+    - send me a dick pic
+    - send me a dic pic
+    - show me your dick
+    - show me your pussay
+    - send your pussy
+    - show me your bussy
+    - I want to see your dick
+    - I want to see your pussy
+    - I want to fuck you
+    - I want you
+    - Erotic role play
+    - Can we ERP?
+    - Send more nudes or Ill hurt you
+    - If you dont send more nudes Ill leak them
+    - Ill leak your nudes
+
+- intent: AGE
+  examples: |
+    - I am [13](age) years olde
+    - I am [14](age)
+    - Bish I am [16](age)
+    - I am [45](age) is that okay?
+    - I am [23](age) is that okay?
+    - I am [36](age) okay?
+    - Age: [63](age)
+    - age: [13](age)
+    - but I'm only [12](age)
+    - I'm only [12]

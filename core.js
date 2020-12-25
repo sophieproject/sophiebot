@@ -3,12 +3,24 @@ const sqlite3 = require("sqlite3").verbose();
 const main = require("./core.js");
 const db = new sqlite3.Database("./data/sophie.db");
 const crypto = require("crypto");
+const fetch = require("node-fetch");
 require("dotenv").config();
-exports.msgCheck = async function(message, nlp) {
-	const result = await nlp.process("en", message);
-	return new Promise(resolve => {
-		resolve(result);
-	});
+exports.msgCheck = function(message) {
+	const body = {
+		text: message
+	}
+	
+	fetch("http://localhost:5005/model/parse", {
+		method: "post",
+		body: JSON.stringify(body),
+		headers: { "Content-Type": "application/json" }
+	  })
+	  .then(res => res.json())
+	  .then(json => {
+		  const result = json
+		  return result;
+		})
+	  .catch(err => console.log(err))
 };
 exports.timestamp = function() {
 	const dateOb = new Date();

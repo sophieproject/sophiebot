@@ -20,20 +20,17 @@ any files in /bots are to be loaded below
 training the AI here so it doesn't have to be done
 on every crash to minimize downtime
 */
-
-
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+const main = require("./core.js");
 async function Init() {
-  const { dockStart } = require("@nlpjs/basic");
-  const core = require("./core.js");
-  const dock = await dockStart({ use: ['Basic']});
-  const nlp = dock.get('nlp');
-  core.log("Loading the Sophie Model (1/3)");
-  await nlp.addCorpus('./models/en-US.json');
-  core.log("Training the Sophie AI Model (2/3)");
-  await nlp.train();
-  core.log("Sophie has been trained! (2/3)");
+  main.log("Starting the training process! (1/3)")
+ // const { stdout, stderr } = await exec("cd .\\model && .\\venv\\Scripts\\activate && rasa train")
+ // main.log(stdout);
+  main.log("Training Finished! (1/3)")
+  exec("cd .\\model && .\\venv\\Scripts\\activate && rasa run --enable-api")
   const discord = require("./bots/discord.js")
-  discord.init(nlp);
+  discord.init();
 }
 
 Init();

@@ -2,7 +2,7 @@ const main = require("../core.js"); // require SQLite functions, logging, etc
 // we packaged everything in core.js to make it easier to fix bugs and add more bots
 require("dotenv").config();
 const Discord = require("discord.js");
-exports.init = async function init(nlp) {
+exports.init = async function init() {
 	main.log("Starting Discord bot initiation sequence.");
 	main.log("Loading configuration (3/3)");
 	const DiscordToken = process.env.DiscordToken;
@@ -78,7 +78,7 @@ exports.init = async function init(nlp) {
 			type: "WATCHING"
 		});
 		if (msg.author.bot) return;
-		const smain = await main.userPoints(msg.author.id);
+		smain = await main.userPoints(msg.author.id);
 		if (smain == "P") {
 			if (msg.channel.type == "dm") return;
 			msg.member.kick().catch();
@@ -86,15 +86,16 @@ exports.init = async function init(nlp) {
 		}
 		if (smain > 10) {
 			// add a setting to change this
-			msg.delete().catch();
+			// msg.delete().catch();
 			return;
 			// not kicking because there is time for an appeal
 		}
-		const message = await main.msgCheck(msg.content, nlp);
-		if (message.intent == "None") return;
+		const message = main.msgCheck(msg.content);
+		console.log(message)
+		if (message.name == "None" || message.name == 0) return;
 		match = msg.content.match(/(\d+)/); // this system is temp but nlpjs has broken entity extraction
-		if (message.intent == "AGE" && match !== null) {
-			const currentAge = await main.userAge(main.hashUsername(msg.author.id));
+		if (message.name == "AGE" && match !== null) {
+			currentAge = await main.userAge(main.hashUsername(msg.author.id));
 			if (match == currentAge) return;
 			var queryResult = await query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
 			if (queryResult == "true") {
@@ -103,9 +104,9 @@ exports.init = async function init(nlp) {
 				}
 			}
 		} else {
-			if (message.intent >= 1 && message.score >= 0.5) {
-				main.addStrike(msg.author.id, message.intent, message.score, msg.content);
-				if (message.intent > 1) {
+			if (message.name >= 1) {
+				main.addStrike(msg.author.id, message.name, message.confidence, msg.content);
+				if (message.name > 1) {
 					warning(msg, "This user has a strike investigation pending. Proceed with caution.")
 				}
 			}
