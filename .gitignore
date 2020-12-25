@@ -1,0 +1,14 @@
+# Sophie Logs
+/logs
+
+# Node Modules
+/node_modules
+
+# Sensitive Data
+*.env
+*.db
+*.old
+
+# AI Models
+/models
+model.nlp
