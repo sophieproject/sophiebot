@@ -1,0 +1,39 @@
+{
+  "name": "sophiebot",
+  "version": "1.0.0",
+  "description": "The bot that is designed to protect children from pedophiles online",
+  "main": "index.js",
+  "scripts": {
+    "create-db": "tools/create_db.js",
+    "test-ai": "tools/ai.js",
+    "start": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sophieproject/sophiebot.git"
+  },
+  "keywords": [
+    "anti-map",
+    "anti-pedophile",
+    "children",
+    "children",
+    "protection"
+  ],
+  "author": "The Sophie Foundation",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sophieproject/sophiebot/issues"
+  },
+  "homepage": "https://github.com/sophieproject/sophiebot#readme",
+  "dependencies": {
+    "@nlpjs/basic": "^4.17.1",
+    "bcrypt": "^5.0.0",
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.15.0",
+    "eslint-config-google": "^0.14.0"
+  }
+}
