@@ -3,25 +3,8 @@ const sqlite3 = require("sqlite3").verbose();
 const main = require("./core.js");
 const db = new sqlite3.Database("./data/sophie.db");
 const crypto = require("crypto");
-const fetch = require("node-fetch");
 require("dotenv").config();
-exports.msgCheck = function(message) {
-	const body = {
-		text: message
-	}
-	
-	fetch("http://localhost:5005/model/parse", {
-		method: "post",
-		body: JSON.stringify(body),
-		headers: { "Content-Type": "application/json" }
-	  })
-	  .then(res => res.json())
-	  .then(json => {
-		  const result = json
-		  return result;
-		})
-	  .catch(err => console.log(err))
-};
+
 exports.timestamp = function() {
 	const dateOb = new Date();
 	// current date
@@ -167,7 +150,7 @@ exports.userBirthday = async function(username, requestedAge) {
 	return new Promise(async (resolve, reject) => {
 		if (requestedAge > 117) resolve(606);
 		hashedUsername = await main.hashUsername(username);
-		currentAge = await main.userAge(username)
+		currentAge = main.userAge(username)
 		db.get(`SELECT Points, Modified FROM users WHERE Username = '${hashedUsername}'`, async function(err, result) {
 			if (currentAge == requestedAge) return;
 			if (currentAge == 404) {

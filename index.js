@@ -20,17 +20,19 @@ any files in /bots are to be loaded below
 training the AI here so it doesn't have to be done
 on every crash to minimize downtime
 */
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-const main = require("./core.js");
-async function Init() {
-  main.log("Starting the training process! (1/3)")
- // const { stdout, stderr } = await exec("cd .\\model && .\\venv\\Scripts\\activate && rasa train")
- // main.log(stdout);
-  main.log("Training Finished! (1/3)")
-  exec("cd .\\model && .\\venv\\Scripts\\activate && rasa run --enable-api")
-  const discord = require("./bots/discord.js")
-  discord.init();
-}
 
-Init();
+const main = require("./core.js");
+const portfinder = require('portfinder');
+
+portfinder.basePort = 5005;    // default port: 5005
+portfinder.highestPort = 5005;
+
+  portfinder.getPortPromise()
+    .then(() => {
+      main.log("Sophie's AI server is not deployed. Closing.")
+      process.exit()
+    })
+    .catch(() => {
+      const discord = require("./bots/discord.js")
+      discord.init();
+    });
