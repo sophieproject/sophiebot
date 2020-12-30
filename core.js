@@ -29,6 +29,7 @@ exports.log = function(content) {
 			process.exit("LOG_ERROR");
 		}
 	});
+	console.log(content)
 	return;
 };
 exports.hashUsername = function(username) {
