@@ -1,7 +1,9 @@
 const fs = require("fs");
 const Database = require('better-sqlite3');
 const main = require("./core.js");
-const db = new Database('./data/sophie.db', { verbose: main.log });
+const db = new Database('./data/sophie.db', {
+	verbose: main.log
+});
 const crypto = require("crypto");
 require("dotenv").config();
 exports.timestamp = function() {
@@ -83,7 +85,7 @@ exports.update = function(username, age, points) {
 		db.prepare(`UPDATE users SET Age = '${age}', Points = '${userPoints + points}' , Modified = '${main.date()}' WHERE Username = '${hashedUsername}'`).run()
 	}
 };
-exports.userExists = function(username){
+exports.userExists = function(username) {
 	var result = db.prepare(`SELECT Age FROM users WHERE Username = ?`).get(username);
 	if (result === undefined) {
 		return "false";
