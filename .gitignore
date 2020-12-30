@@ -4,11 +4,15 @@
 # Node Modules
 /node_modules
 
+# Python VEnv
+/model/venv
+
 # Sensitive Data
 *.env
 *.db
 *.old
 
 # AI Models
-/models
-model.nlp
+.tar.gz
+/model/models
+/model/data

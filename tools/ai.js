@@ -1,22 +1,26 @@
-const {
-	dockStart
-} = require('@nlpjs/basic');
-const readline = require("readline");
-const rl = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout
+const Discord = require("discord.js");
+require("dotenv").config();
+const DiscordToken = process.env.DiscordToken;
+const bot = new Discord.Client();
+const fetch = require("node-fetch");
+
+bot.on("message", async msg => {
+
+const body = {
+	text: msg.content
+}
+
+fetch("http://localhost:5005/model/parse", {
+	method: "post",
+	body: JSON.stringify(body),
+	headers: { "Content-Type": "application/json" }
+  })
+  .then(res => res.json())
+  .then(json => {
+	  const result = json
+	  console.log(result.intent)
+	})
+  .catch(err => console.log(err))
 });
-(async () => {
-	const dock = await dockStart({
-		use: ['Basic']
-	});
-	const nlp = dock.get('nlp');
-	await nlp.addCorpus('./models/en-US.json');
-	await nlp.train();
-	while (true) {
-		rl.question("Message> ", async function(message) {
-			const response = await nlp.process('en', message);
-			console.log(response.intent + "\n" + response.score);
-		});
-	}
-})();
+
+bot.login(DiscordToken)

@@ -21,19 +21,18 @@ training the AI here so it doesn't have to be done
 on every crash to minimize downtime
 */
 
+const main = require("./core.js");
+const portfinder = require('portfinder');
 
-async function Init() {
-  const { dockStart } = require("@nlpjs/basic");
-  const core = require("./core.js");
-  const dock = await dockStart({ use: ['Basic']});
-  const nlp = dock.get('nlp');
-  core.log("Loading the Sophie Model (1/3)");
-  await nlp.addCorpus('./models/en-US.json');
-  core.log("Training the Sophie AI Model (2/3)");
-  await nlp.train();
-  core.log("Sophie has been trained! (2/3)");
-  const discord = require("./bots/discord.js")
-  discord.init(nlp);
-}
+portfinder.basePort = 5005;    // default port: 5005
+portfinder.highestPort = 5005;
 
-Init();
+  portfinder.getPortPromise()
+    .then(() => {
+      main.log("Sophie's AI server is not deployed. Closing.")
+      process.exit()
+    })
+    .catch(() => {
+      const discord = require("./bots/discord.js")
+      discord.init();
+    });
