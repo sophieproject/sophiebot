@@ -1,35 +1,20 @@
 const fs = require("fs");
-const sqlite3 = require("sqlite3").verbose();
+const Database = require('better-sqlite3');
 const main = require("./core.js");
-const db = new sqlite3.Database("./data/sophie.db");
+const db = new Database('./data/sophie.db', { verbose: main.log });
 const crypto = require("crypto");
 require("dotenv").config();
-
 exports.timestamp = function() {
 	const dateOb = new Date();
-	// current date
-	// adjust 0 before single digit date
-	const date = ("0" + dateOb.getDate()).slice(-2);
-	// current month
-	const month = ("0" + (dateOb.getMonth() + 1)).slice(-2);
-	// current year
-	const year = dateOb.getFullYear();
-	// current hours
 	const hours = dateOb.getHours();
-	// current minutes
 	const minutes = dateOb.getMinutes();
-	// current seconds
 	const seconds = dateOb.getSeconds();
-	return (year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds);
+	return (main.date() + " " + hours + ":" + minutes + ":" + seconds);
 };
 exports.date = function() {
 	const dateOb = new Date();
-	// current date
-	// adjust 0 before single digit date
 	const date = ("0" + dateOb.getDate()).slice(-2);
-	// current month
 	const month = ("0" + (dateOb.getMonth() + 1)).slice(-2);
-	// current year
 	const year = dateOb.getFullYear();
 	return year + "-" + month + "-" + date;
 };
@@ -42,135 +27,90 @@ exports.log = function(content) {
 			process.exit("LOG_ERROR");
 		}
 	});
-	console.log(content);
 	return;
 };
-exports.hashUsername = async function(username) {
-	return new Promise((resolve, reject) => {
-		hash = crypto.createHash("sha512", username).digest("hex");
-		resolve(hash);
-	});
+exports.hashUsername = function(username) {
+	return crypto.createHash("sha1").update(username).digest("hex");
 };
-exports.userPoints = async function(username) {
-	hashedUsername = await main.hashUsername(username)
-	return new Promise((resolve, reject) => {
-		db.get("SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?", [hashedUsername], async function(err, result) {
-			// expected result: {"Points": 0, "Pedophile": 0, "Suspicious": 0}
-			if (err) {
-				main.log(err);
-				reject(err);
-			}
-			if (result === undefined) {
-				resolve(0);
-				return;
-			}
-			if (result.Pedophile == 1) {
-				resolve("P");
-				return;
-			}
-			if (result.Suspicious == 1) {
-				resolve("S" + result.Points);
-				return;
-			}
-			resolve(result.Points);
-		});
-	});
+exports.userPoints = function(username) {
+	var result = db.prepare("SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?").get(username)
+	if (result === undefined) {
+		return (404);
+	}
+	if (result.Pedophile == 1) {
+		return ("P");
+	}
+	if (result.Suspicious == 1) {
+		return ("S" + result.Points);
+	}
+	return (result.Points);
 };
-exports.userAge = async function(username) {
-	hashedUsername = await main.hashUsername(username)
-	return new Promise((resolve, reject) => {
-		db.get(`SELECT Age FROM users WHERE Username = ${hashedUsername}`, async function(err, result) {
-			if (err) {
-				main.log(err);
-				reject(err);
-			}
-			if (result === undefined || result.Age == "undefined") {
-				resolve("404");
-				return;
-			} else {
-				resolve(result.Age);
-				return;
-			}
-		});
-	});
+exports.userAge = function(username) {
+	hashedUsername = main.hashUsername(username)
+	var result = db.prepare(`SELECT Age FROM users WHERE Username = ?`).get(hashedUsername);
+	if (result === undefined) {
+		return (404);
+	} else {
+		return (result.Age);
+	}
 };
-exports.addStrike = async function(username, severity, score, message) {
-	hashedUsername = await main.hashUsername(username)
-	return new Promise((resolve, reject) => {
-		db.get(`SELECT Age FROM users WHERE Username = ${hashedUsername}`, async function(err, result) {
-			if (err) {
-				main.log(err);
-				reject(err);
-			}
-			if (result === undefined) {
-				points = severity * score;
-			} else {
-				if (result.Age > 17 || result.Age === undefined) {
-					age = 0;
-				} else {
-					age = 1;
-				}
-				points = severity - age - result.Verified * score;
-			}
-			if (points > 0.5) {
-				if (result === undefined) {
-					newAgeValue = 404
-				} else {
-					newAgeValue = result.Age
-				}
-				main.update(username, newAgeValue, points);
-				db.run(`INSERT INTO messages (Message, Sender, Points) VALUES(?, '${username}', '${score}');`, message)
-			}
-		});
-	});
-};
-exports.update = async function(username, age, points) {
+exports.addStrike = function(username, severity, score, message) {
+	var age = main.userAge(username)
+	if (age == "404") {
+		points = severity * score;
+	} else {
+		if (age > 17) {
+			age = 0;
+		} else {
+			age = 1;
+		}
+		points = severity * score - age;
+	}
+	if (points >= 0.5) {
+		main.update(username, age, points);
+		db.prepare(`INSERT INTO messages (Message, Sender, Points) VALUES(?, '${username}', '${score}');`).run(message);
+	}
+}
+exports.update = function(username, age, points) {
+	hashedUsername = main.hashUsername(username);
+	var userPoints = main.userPoints(hashedUsername)
 	if (points === undefined) {
 		points = 0
-	} else {
-		pointvalue = points
 	}
-	hashedUsername = await main.hashUsername(username);
-	db.get(`SELECT Username, Points FROM users WHERE Username = '${hashedUsername}'`, async function(err, result) { // remove as userPoints does this
-		if (err) main.log(err); // Error with SQLite statement Range (Fixed)
-		if (result === undefined) {
-			db.run(`INSERT INTO users (Username, Age, Points, Modified) VALUES('${hashedUsername}', '${age}', '${points}', '${main.date()}')`, function(err) {
-					if (err) main.log(err);
-				} // usernames are hashed to protect privacy when privacy is due
-			);
-		} else {
-			db.run(`UPDATE users SET Age = '${age}', Points = '${result.Points +
-              pointvalue}' , Modified = '${main.date()}' WHERE Username = '${
-              result.Username
-            }'`);
-		}
-	});
+	if (main.userExists(hashedUsername) == "false") {
+		db.prepare(`INSERT INTO users (Username, Age, Points, Modified) VALUES('${hashedUsername}', '${age}', '${points}', '${main.date()}')`).run()
+	} else {
+		db.prepare(`UPDATE users SET Age = '${age}', Points = '${userPoints + points}' , Modified = '${main.date()}' WHERE Username = '${hashedUsername}'`).run()
+	}
 };
-exports.userBirthday = async function(username, requestedAge) {
-	return new Promise(async (resolve, reject) => {
-		if (requestedAge > 117) resolve(606);
-		hashedUsername = await main.hashUsername(username);
-		currentAge = main.userAge(username)
-		db.get(`SELECT Points, Modified FROM users WHERE Username = '${hashedUsername}'`, async function(err, result) {
-			if (currentAge == requestedAge) return;
-			if (currentAge == 404) {
-				main.update(username, requestedAge, 404);
-				return;
-			} else if (requestedAge > (currentAge + 1) || requestedAge < currentAge) {
-				resolve(606);
-				return;
-			} else
-			if ((result.Modified = main.date())) {
-				resolve(606);
-				return;
-			} else {
-				if (result === undefined) {
-					newPointsValue = 404
-				} else {
-					newPointsValue = result.Points
-				}
-				main.update(username, requestedAge, newPointsValue);
-			}
-		});
-	});
+exports.userExists = function(username){
+	var result = db.prepare(`SELECT Age FROM users WHERE Username = ?`).get(username);
+	if (result === undefined) {
+		return "false";
+	} else {
+		return "true";
+	}
+}
+exports.userBirthday = function(username, requestedAge) {
+	if (requestedAge > 117) return (606);
+	hashedUsername = main.hashUsername(username);
+	currentAge = main.userAge(username)
+	var result = db.prepare(`SELECT Modified FROM users WHERE Username =  ?`).get(hashedUsername);
+	if (currentAge == requestedAge) return;
+	if (currentAge == 404) {
+		main.update(username, requestedAge, 404);
+		return;
+	} else if (requestedAge > (currentAge + 1) || requestedAge < currentAge) {
+		return (606);
+	} else
+	if ((result.Modified = main.date())) {
+		return (606);
+	} else {
+		if (result === undefined) {
+			newPointsValue = 404
+		} else {
+			newPointsValue = userPoints(hashedUsername)
+		}
+		main.update(username, requestedAge, newPointsValue);
+	}
 }

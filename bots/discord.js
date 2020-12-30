@@ -2,6 +2,8 @@ const main = require("../core.js"); // require SQLite functions, logging, etc
 // we packaged everything in core.js to make it easier to fix bugs and add more bots
 require("dotenv").config();
 const Discord = require("discord.js");
+const fetch = require("node-fetch")
+
 exports.init = async function init() {
 	main.log("Starting Discord bot initiation sequence.");
 	main.log("Loading configuration (3/3)");
@@ -68,8 +70,9 @@ exports.init = async function init() {
 	bot.on("ready", () => {
 		main.log("Sophie is active on Discord!");
 	});
-	bot.on("guildMemberAdd", member => {
-		if (main.userPoints(member.id) == "P") {
+	bot.on("guildMemberAdd",async member => {
+		memberPoints = await main.userPoints(member.id)
+		if (memberPoints == "P") {
 			member.kick().catch();
 		}
 	}); // this will remove the pedophiles when they join back, making a softban
@@ -78,39 +81,55 @@ exports.init = async function init() {
 			type: "WATCHING"
 		});
 		if (msg.author.bot) return;
-		smain = await main.userPoints(msg.author.id);
+		let smain = await main.userPoints(msg.author.id);
 		if (smain == "P") {
 			if (msg.channel.type == "dm") return;
 			msg.member.kick().catch();
 			return;
-		}
-		if (smain > 10) {
-			// add a setting to change this
-			// msg.delete().catch();
+		} else if (smain > 10 || smain == 404) {
+			//add a setting to change this
+			msg.delete().catch();
 			return;
 			// not kicking because there is time for an appeal
 		}
-		const message = main.msgCheck(msg.content);
-		console.log(message)
-		if (message.name == "None" || message.name == 0) return;
+		
+		messageContent = msg.content.replace(/\//g, "")
+		const body = {
+			text: messageContent,
+		}
+	
+		fetch("http://localhost:5005/model/parse/", {
+			method: "post",
+			body: JSON.stringify(body),
+			headers: { "Content-Type": "application/json" }
+		  })
+		  .then(res => res.json()) //res.json()
+		  .then(json => {
+			  var message = json
+		if (message.intent.name == "None" || message.intent.name == 0) return;
 		match = msg.content.match(/(\d+)/); // this system is temp but nlpjs has broken entity extraction
-		if (message.name == "AGE" && match !== null) {
-			currentAge = await main.userAge(main.hashUsername(msg.author.id));
+		if (message.intent.name == "AGE" && match !== null) {
+			var currentAge = main.userAge(main.hashUsername(msg.author.id));
 			if (match == currentAge) return;
-			var queryResult = await query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
+			var queryResult = query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
 			if (queryResult == "true") {
-				if (await main.userBirthday(msg.author.id, match[0]) == 606) {
+				var validBirthday = main.userBirthday(msg.author.id, match[0])
+				if (validBirthday == 606) {
 					warning(msg, "This user is claiming to be inconsistent ages. Proceed with caution.")
 				}
 			}
 		} else {
-			if (message.name >= 1) {
-				main.addStrike(msg.author.id, message.name, message.confidence, msg.content);
-				if (message.name > 1) {
+			if (message.intent.name >= 1) {
+				main.addStrike(msg.author.id, message.intent.name, message.intent.confidence, msg.content);
+				if (message.intent.name > 1) {
 					warning(msg, "This user has a strike investigation pending. Proceed with caution.")
 				}
 			}
 		}
+			
+	}).catch((error) => {
+		main.log(error)
+	  })
 	});
 	bot.login(DiscordToken);
 };

@@ -26,9 +26,9 @@
   },
   "homepage": "https://github.com/sophieproject/sophiebot#readme",
   "dependencies": {
+    "better-sqlite3": "^7.1.2",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
-    "portfinder": "^1.0.28",
-    "sqlite3": "^5.0.0"
+    "portfinder": "^1.0.28"
   }
 }
