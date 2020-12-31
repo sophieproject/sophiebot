@@ -22,27 +22,11 @@ on every crash to minimize downtime
 */
 
 const main = require("./core.js");
-<<<<<<< Updated upstream
-const portfinder = require('portfinder');
-
-portfinder.basePort = 5005;    // default port: 5005
-portfinder.highestPort = 5005;
-<<<<<<< Updated upstream
-=======
-portfinder.getPortPromise().then(() => {
-	main.log("Sophie's AI server is not deployed. Closing.")
-	process.exit()
-}).catch(() => {
-	const discord = require("./bots/discord.js")
-	discord.init();
-});
-=======
 
 function start(){
 const portfinder = require('portfinder');
 portfinder.basePort = 5005;    // default port: 5005
 portfinder.highestPort = 5005;
->>>>>>> Stashed changes
 
   portfinder.getPortPromise()
     .then(() => {
@@ -53,10 +37,6 @@ portfinder.highestPort = 5005;
       const discord = require("./bots/discord.js")
       discord.init();
     });
-<<<<<<< Updated upstream
-=======
   }
 
 start()
->>>>>>> Stashed changes
->>>>>>> Stashed changes
