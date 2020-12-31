@@ -20,14 +20,12 @@ any files in /bots are to be loaded below
 training the AI here so it doesn't have to be done
 on every crash to minimize downtime
 */
-
 const main = require("./core.js");
 
 function start(){
 const portfinder = require('portfinder');
 portfinder.basePort = 5005;    // default port: 5005
 portfinder.highestPort = 5005;
-
   portfinder.getPortPromise()
     .then(() => {
       main.log("Sophie's AI server is not deployed. Closing.")

@@ -1,7 +1,9 @@
 const fs = require("fs");
 const Database = require('better-sqlite3');
 const main = require("./core.js");
-const db = new Database('./data/sophie.db', { verbose: main.log });
+const db = new Database('./data/sophie.db', {
+	verbose: main.log
+});
 const crypto = require("crypto");
 require("dotenv").config();
 exports.timestamp = function() {
@@ -27,6 +29,7 @@ exports.log = function(content) {
 			process.exit("LOG_ERROR");
 		}
 	});
+	console.log(content)
 	return;
 };
 exports.hashUsername = function(username) {
@@ -35,7 +38,7 @@ exports.hashUsername = function(username) {
 exports.userPoints = function(username) {
 	var result = db.prepare("SELECT Points, Pedophile, Suspicious FROM users WHERE Username = ?").get(username)
 	if (result === undefined) {
-		return (404);
+		return (0);
 	}
 	if (result.Pedophile == 1) {
 		return ("P");
@@ -68,6 +71,8 @@ exports.addStrike = function(username, severity, score, message) {
 	}
 	if (points >= 0.5) {
 		main.update(username, age, points);
+		main.log(`User ${username} was hit with a ${points} point strike, for the message ${message}. Run sophie messages for more information.`)
+		// easier access to messages for Admins
 		db.prepare(`INSERT INTO messages (Message, Sender, Points) VALUES(?, '${username}', '${score}');`).run(message);
 	}
 }
@@ -83,7 +88,7 @@ exports.update = function(username, age, points) {
 		db.prepare(`UPDATE users SET Age = '${age}', Points = '${userPoints + points}' , Modified = '${main.date()}' WHERE Username = '${hashedUsername}'`).run()
 	}
 };
-exports.userExists = function(username){
+exports.userExists = function(username) {
 	var result = db.prepare(`SELECT Age FROM users WHERE Username = ?`).get(username);
 	if (result === undefined) {
 		return "false";
@@ -98,7 +103,7 @@ exports.userBirthday = function(username, requestedAge) {
 	var result = db.prepare(`SELECT Modified FROM users WHERE Username =  ?`).get(hashedUsername);
 	if (currentAge == requestedAge) return;
 	if (currentAge == 404) {
-		main.update(username, requestedAge, 404);
+		main.update(username, requestedAge, 0);
 		return;
 	} else if (requestedAge > (currentAge + 1) || requestedAge < currentAge) {
 		return (606);
@@ -106,11 +111,6 @@ exports.userBirthday = function(username, requestedAge) {
 	if ((result.Modified = main.date())) {
 		return (606);
 	} else {
-		if (result === undefined) {
-			newPointsValue = 404
-		} else {
-			newPointsValue = userPoints(hashedUsername)
-		}
-		main.update(username, requestedAge, newPointsValue);
+		main.update(username, requestedAge, 0);
 	}
 }

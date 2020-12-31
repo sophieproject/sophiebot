@@ -3,7 +3,6 @@ const main = require("../core.js"); // require SQLite functions, logging, etc
 require("dotenv").config();
 const Discord = require("discord.js");
 const fetch = require("node-fetch")
-
 exports.init = async function init() {
 	main.log("Starting Discord bot initiation sequence.");
 	main.log("Loading configuration (3/3)");
@@ -70,7 +69,7 @@ exports.init = async function init() {
 	bot.on("ready", () => {
 		main.log("Sophie is active on Discord!");
 	});
-	bot.on("guildMemberAdd",async member => {
+	bot.on("guildMemberAdd", async member => {
 		memberPoints = await main.userPoints(member.id)
 		if (memberPoints == "P") {
 			member.kick().catch();
@@ -92,44 +91,42 @@ exports.init = async function init() {
 			return;
 			// not kicking because there is time for an appeal
 		}
-		
 		messageContent = msg.content.replace(/\//g, "")
 		const body = {
 			text: messageContent,
 		}
-	
 		fetch("http://localhost:5005/model/parse/", {
-			method: "post",
-			body: JSON.stringify(body),
-			headers: { "Content-Type": "application/json" }
-		  })
-		  .then(res => res.json()) //res.json()
-		  .then(json => {
-			  var message = json
-		if (message.intent.name == "None" || message.intent.name == 0) return;
-		match = msg.content.match(/(\d+)/); // this system is temp but nlpjs has broken entity extraction
-		if (message.intent.name == "AGE" && match !== null) {
-			var currentAge = main.userAge(main.hashUsername(msg.author.id));
-			if (match == currentAge) return;
-			var queryResult = query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
-			if (queryResult == "true") {
-				var validBirthday = main.userBirthday(msg.author.id, match[0])
-				if (validBirthday == 606) {
-					warning(msg, "This user is claiming to be inconsistent ages. Proceed with caution.")
+				method: "post",
+				body: JSON.stringify(body),
+				headers: {
+					"Content-Type": "application/json"
 				}
-			}
-		} else {
-			if (message.intent.name >= 1) {
-				main.addStrike(msg.author.id, message.intent.name, message.intent.confidence, msg.content);
-				if (message.intent.name > 1) {
-					warning(msg, "This user has a strike investigation pending. Proceed with caution.")
+			}).then(res => res.json()) //res.json()
+			.then(json => {
+				var message = json
+				if (message.intent.name == "None" || message.intent.name == 0) return;
+				match = msg.content.match(/(\d+)/); // this system is temp but nlpjs has broken entity extraction
+				if (message.intent.name == "AGE" && match !== null) {
+					var currentAge = main.userAge(main.hashUsername(msg.author.id));
+					if (match == currentAge) return;
+					var queryResult = query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
+					if (queryResult == "true") {
+						var validBirthday = main.userBirthday(msg.author.id, match[0])
+						if (validBirthday == 606) {
+							warning(msg, "This user is claiming to be inconsistent ages. Proceed with caution.")
+						}
+					}
+				} else {
+					if (message.intent.name >= 1) {
+						main.addStrike(msg.author.id, message.intent.name, message.intent.confidence, msg.content);
+						if (message.intent.name > 1) {
+							warning(msg, "This user has a strike investigation pending. Proceed with caution.")
+						}
+					}
 				}
-			}
-		}
-			
-	}).catch((error) => {
-		main.log(error)
-	  })
+			}).catch((error) => {
+				main.log(error)
+			})
 	});
 	bot.login(DiscordToken);
 };
