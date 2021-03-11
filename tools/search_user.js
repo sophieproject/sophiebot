@@ -1,19 +1,16 @@
-const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("./data/sophie.db");
+const Database = require('better-sqlite3');
 const main = require("../core.js");
-
-function search_user(username) {
-	db.get("SELECT * FROM users WHERE Username = ?", [username], function(err, result) {
-		if (err) main.log(err);
-		main.log("User being searched: " + username);
-		if (result === undefined) {
-			main.log("User not found");
-			return;
-		}
-		console.log(`-------------------------------------------------------------------------------------`);
-		console.log(`Username: ${result.Username} | Points: ${result.Points} | Pedophile? ${result.Pedophile} | Suspicious? ${result.Suspicious}`);
-		console.log(`-------------------------------------------------------------------------------------`);
-	});
-}
-var Args = process.argv.slice(2);
-search_user(Args[0]);
+const db = new Database('./data/sophie.db', {
+    verbose: main.log
+});
+const Args = process.argv.slice(2);
+    const result = db.prepare("SELECT * FROM users WHERE Username = ?", [Args[0]]).get();
+    if (err) main.log(err);
+    main.log("User being searched: " + Args[0]);
+    if (!result) {
+        main.log("User not found");
+        return;
+    }
+    console.log(`-------------------------------------------------------------------------------------`);
+    console.log(`Username: ${result.Username} | Points: ${result.Points} | Pedophile? ${result.Pedophile} | Suspicious? ${result.Suspicious}`);
+    console.log(`-------------------------------------------------------------------------------------`);

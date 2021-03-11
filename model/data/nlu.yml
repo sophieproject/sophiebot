@@ -17,4 +17,26 @@ nlu:
        - 4
   - intent: '5'
     examples: |
-     -5
+       - 5
+  - intent: 'AGE'
+    examples: |
+       - I am 15
+       - Age: 23
+       - My age is 16
+       - m16
+       - f14
+  - intent: 'PII'
+    examples: |
+      - (213) 3423-2349
+      - 2342395283
+      - +1 (219) 345 3458
+      - iynot1jq0fr@temporary-mail.net
+      - first.last@gmail.com
+      - totallyreal@yahoo.com
+      - thisisfake.yeah@outlook.com
+      - 4588855667282700 156
+      - 6011066022174994 598
+      - 704-594-8438
+      - 3888  Concord Street
+      - 3888  Concord Street Charlotte NC
+      - 483  Middleville Road
