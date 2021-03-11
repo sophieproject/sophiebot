@@ -1,8 +1,10 @@
 # Sophie Logs
 /logs
 
-# Node Modules
+# Node/NPM/Yarn
 /node_modules
+yarn.lock
+package-lock.json
 
 # Python VEnv
 /model/venv
