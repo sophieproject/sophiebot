@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import fetch from 'node-fetch';
 import Database from 'better-sqlite3';
 
-const db = new Database('./data/sophie.db', {
-    verbose: main.log
+const db = Database('./data/sophie.db', {
+    verbose: console.log
 });
 import * as crypto from 'crypto';
 import { load } from 'ts-dotenv';
@@ -16,7 +16,7 @@ var responseTimes:Array<Number> = []
 
 export class check {
 
-    public explict(message:string) {
+    public explicit(message:string) {
 
         return new Promise(function (resolve, reject) {
             message = message.replace(/\//g, "")
@@ -31,7 +31,7 @@ export class check {
                     }
                 }).then(res => res.json())
                 .then(json => {
-                    const result = new Object;
+                    const result:any = new Object;
                     result.score = parseInt(json.intent.name)
                     result.confidence = json.intent.confidence
                     result.points = result.score * result.confidence
@@ -110,12 +110,13 @@ export class monitor {
         const dates = new time;
 
         // logging function
-        fs.appendFileSync(`./logs/${dates.date}.txt`, `\n [${dates.FullTime}] ${content}`, error => {
+
+        var data:string = `\n [${dates.FullTime}] ${content}`;
+
+        fs.appendFile(`./logs/${dates.date}.txt`, data, (err) => {
             // logging function
-            if (error) {
-                console.error("Error on Logging: " + error);
-                return process.exit(1)
-            }
+            if (err) throw err;
+            return process.exit(1);
         });
         console.log(content)
         return;
@@ -123,13 +124,13 @@ export class monitor {
 
     public logFinish (startTime) {
         const self = new monitor;
-        const finishedTime = new Date
+        const finishedTime:any = new Date
         const timeToExecute = finishedTime - startTime
         self.log("Message processed in " + timeToExecute + " ms")
         responseTimes.push(timeToExecute)
         var total:number = 0
         for(var i = 0; i < responseTimes.length; i++) {
-            var total:number += responseTimes:Array<Number>[i];
+            responseTimes.push(i);
         }
         let averageResponseTime = total / responseTimes.length;
         self.log("Average response time is " + averageResponseTime + " ms")
@@ -141,15 +142,16 @@ export class pdb {
 
     private update(username, age, points) {
         const pd = new pdb;
+        const t = new time;
     
         const userPoints = pd.userPoints(username)
         if (!points) {
             points = 0
         }
         if (!userPoints) {
-            db.prepare(`INSERT INTO users (Username, Age, Points, Modified) VALUES('${username}', '${age}', '${points}', '${main.date()}')`).run()
+            db.prepare(`INSERT INTO users (Username, Age, Points, Modified) VALUES('${username}', '${age}', '${points}', '${t.date()}')`).run()
         } else {
-            db.prepare(`UPDATE users SET Age = '${age}', Points = '${userPoints + points}' , Modified = '${main.date()}' WHERE Username = '${username}'`).run()
+            db.prepare(`UPDATE users SET Age = '${age}', Points = '${userPoints + points}' , Modified = '${t.date()}' WHERE Username = '${username}'`).run()
         }
     };
 
@@ -208,6 +210,7 @@ export class pdb {
 
     public userBirthday (username, requestedAge) {
         const self = new pdb;
+        const t = new time;
         if (requestedAge > 117) return (606);
         const currentAge = self.userAge(username)
         if (currentAge == requestedAge) return;
@@ -218,7 +221,7 @@ export class pdb {
         } else if (requestedAge > (currentAge + 1) || requestedAge < currentAge) {
             return (606);
         } else
-        if ((result.Modified = main.date())) {
+        if ((result.Modified = t.date())) {
             return (606);
         } else {
             self.update(username, requestedAge, 0);

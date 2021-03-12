@@ -1,10 +1,14 @@
-const main = require("../core.js"); // require SQLite functions, logging, etc
+import * as main from "../core"; // require SQLite functions, logging, etc
 require("dotenv").config();
 const Discord = require("discord.js");
 
+const mon = new main.monitor;
+const pd = new main.pdb;
+const chk = new main.check;
+
 exports.init = async function init() {
-    main.log("Sophie is starting on Discord");
-    main.log("Loading configuration (1/1)");
+    mon.log("Sophie is starting on Discord");
+    mon.log("Loading configuration (1/1)");
     const DiscordToken = process.env.DiscordToken;
     const bot = new Discord.Client();
 
@@ -64,12 +68,12 @@ exports.init = async function init() {
             });
         });
     }
-    main.log("Configuration loaded! (1/1)");
+    mon.log("Configuration loaded! (1/1)");
     bot.on("ready", () => {
-        main.log("Sophie's Discord Bot has started!");
+        mon.log("Sophie's Discord Bot has started!");
     });
     bot.on("guildMemberAdd", member => {
-        memberPoints = main.userPoints(member.id)
+        var memberPoints:any = pd.userPoints(member.id)
         if (memberPoints == "P") {
             member.kick().catch();
         }
@@ -78,41 +82,41 @@ exports.init = async function init() {
         if (msg.author.id == bot.user.id) return;
         if (msg.author.bot) return;
         const startTime = new Date();
-        main.log("Message has been recieved")
-        main.log("Message recieved at: " + startTime)
+        mon.log("Message has been recieved")
+        mon.log("Message recieved at: " + startTime)
         bot.user.setActivity(`${(bot.guilds.fetch, bot.guilds.cache.reduce((a, g) => a + g.memberCount, 0))} users`, {
             type: "WATCHING"
         });
-        const username = main.hashUsername(msg.author.id)
-        let user = main.userPoints(username);
+        const username = pd.hash(msg.author.id)
+        let user = pd.userPoints(username);
         if (user == "P") {
             if (msg.channel.type == "dm") {
-                main.log("Message processing discarded. Reason: Direct Messages")
+                mon.log("Message processing discarded. Reason: Direct Messages")
                 return;
             }
-            msg.member.kick().catch( main.log("Message processing discarded. Reason: Sender is a pedophile, error removing!"));
-            main.log("Message processing discarded. Reason: Sender is a pedophile.")
+            msg.member.kick().catch( mon.log("Message processing discarded. Reason: Sender is a pedophile, error removing!"));
+            mon.log("Message processing discarded. Reason: Sender is a pedophile.")
             return;
         } else if (user > 10 || user == 404) {
-            main.log("Message processing discarded. Reason: Max Point Limit reached, message deleted.")
+            mon.log("Message processing discarded. Reason: Max Point Limit reached, message deleted.")
             msg.delete().catch();
             return;
             // not kicking because there is time for an appeal
         }
-        main.explicitCheck(msg.content)
+        chk.explicit(msg.content)
             .then(function (json) {
-                const message = json
+                const message:any = json
                 if (message.score == 'NaN' || message.score == 0){
-                    main.logFinish(startTime)
+                    mon.logFinish(startTime)
                     return;
                 }
-                ageNumber = msg.content.match(/(\d+)/);
+                var ageNumber:String = msg.content.match(/(\d+)/);
                 if (message.score == "AGE" && ageNumber !== null) {
-                    const currentAge = main.userAge(username);
+                    const currentAge = pd.userAge(username);
                     if (ageNumber == currentAge) return;
-                    const queryResult = query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
+                    const queryResult:any = query(msg, `You claimed to be ${match[0]} years old, correct?`, msg.author)
                     if (queryResult == "true") {
-                        const validBirthday = main.userBirthday(username, match[0])
+                        const validBirthday:number = pd.userBirthday(username, match[0])
                         if (validBirthday == 606) {
                             warning(msg, "This user is claiming to be inconsistent ages. Proceed with caution.")
                         }
@@ -122,16 +126,16 @@ exports.init = async function init() {
                     warning(msg, "Please refrain from posting personal information in public. This message has been removed for your safety or the safety of others.")
                 } else {
                     if (message.score >= 1) {
-                        main.addStrike(username, message.points, msg.content);
+                        pd.addStrike(username, message.points, msg.content);
                         if (message.score > 1) {
                             warning(msg, "This user has a strike investigation pending. Proceed with caution.")
                         }
                     }
                 }
             }).catch((error) => {
-                main.log(error)
+                mon.log(error)
             })
-            main.logFinish(startTime)
+            mon.logFinish(startTime)
             return;
     });
     bot.login(DiscordToken);

@@ -23,6 +23,10 @@ on every crash to minimize downtime
 const main = require("./core.js");
 const portfinder = require('portfinder');
 
+function delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}
+
 function checkAI() {
     portfinder.basePort = 5005; // default port: 5005
     portfinder.highestPort = 5005;
@@ -39,7 +43,7 @@ function checkAI() {
             var normalizedPath = require("path").join(__dirname, "bots");
             require("fs").readdirSync(normalizedPath).forEach(function (file) {
                 main.log("Loading " + file)
-                bot = require("./bots/" + file);
+                const bot = require("./bots/" + file);
                 main.log("Starting " + file)
                 bot.init();
             });
