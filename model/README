@@ -1,8 +1,0 @@
-To get this part of Sophie operational, you must run the commands in the following order:
-
-python -m venv ./venv
-.\venv\Scripts\activate
-python -m pip install -U pip
-pip install rasa
-
-NOTE: YOU MUST USE PYTHON 3.7 OR ANOTHER VERSION COMPATIBLE WITH TENSORFLOW
