@@ -6,21 +6,23 @@ const fetch = require("node-fetch");
 
 bot.on("message", async msg => {
 
-const body = {
-	text: msg.content
-}
+    const body = {
+        text: msg.content
+    }
 
-fetch("http://localhost:5005/model/parse", {
-	method: "post",
-	body: JSON.stringify(body),
-	headers: { "Content-Type": "application/json" }
-  })
-  .then(res => res.json())
-  .then(json => {
-	  const result = json
-	  console.log(result.intent)
-	})
-  .catch(err => console.log(err))
+    fetch("http://localhost:5005/model/parse", {
+            method: "post",
+            body: JSON.stringify(body),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(res => res.json())
+        .then(json => {
+            const result = json
+            console.log(result.intent)
+        })
+        .catch(err => console.log(err))
 });
 
 bot.login(DiscordToken)

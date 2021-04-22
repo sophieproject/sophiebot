@@ -21,20 +21,32 @@ training the AI here so it doesn't have to be done
 on every crash to minimize downtime
 */
 const main = require("./core.js");
+const creds = require("./creds.js")
+const fetch = require("node-fetch")
 
-function start(){
-const portfinder = require('portfinder');
-portfinder.basePort = 5005;    // default port: 5005
-portfinder.highestPort = 5005;
-  portfinder.getPortPromise()
-    .then(() => {
-      main.log("Sophie's AI server is not deployed. Closing.")
-      process.exit()
-    })
-    .catch(() => {
-      const discord = require("./bots/discord.js")
-      discord.init();
-    });
-  }
+function checkAI() {
+  fetch("http://" + creds.url).then(res => {
+    if (res.ok) {
+      main.log("Sophie's AI Server has been loaded (1/2)")
+      // Load all bots here
+      main.log("Loading Sophie Bots (2/2)")
+      var botPath = require("path").join(__dirname, "bots");
+      require("fs").readdirSync(botPath).forEach(function (file) {
+        main.log("Loading " + file)
+        bot = require("./bots/" + file);
+        main.log("Starting " + file)
+        bot.init();
+      });
+      main.log("All Sophie Bots started! (2/2)")
+    } else {
+      (async () => {
+        await delay(1000) // Wait a second to allow the port to open
+        main.log("Awating Sophie's AI Server")
+        checkAI();
+      });
+    }
+  });
+}
 
-start()
+main.log("Checking Sophie's AI Server (1/2)")
+checkAI();
